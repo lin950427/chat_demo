@@ -1,16 +1,18 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import legacy from "@vitejs/plugin-legacy";
 import { fileURLToPath } from "url";
-// import legacy from "@vitejs/plugin-legacy";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    // legacy({
-    //   targets: ["defaults", "not IE 11"], // 或者明确写 ['ie >= 11']
-    //   additionalLegacyPolyfills: ["regenerator-runtime/runtime"], // async/await 需要
-    // }),
+    // 为老旧浏览器生成 legacy 包（通过 SystemJS 与必要 polyfills）
+    legacy({
+      targets: ["Android >= 5", "iOS >= 9"],
+      // 生成器函数、for-of 等需要 regenerator 支持
+      additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
+    }),
   ],
   resolve: {
     alias: {
@@ -18,21 +20,12 @@ export default defineConfig({
     },
   },
   base: "/hongAi/",
-  // build: {
-  //   target: "es2015",
-  //   rollupOptions: {
-  //     output: {
-  //       manualChunks: undefined,
-  //     },
-  //   },
-  //   minify: "terser",
-  //   terserOptions: {
-  //     compress: {
-  //       drop_console: true,
-  //       drop_debugger: true,
-  //     },
-  //   },
-  // },
+  build: {
+    // 现代构建的最低语法目标；legacy 插件会额外产出 ES5 兼容包
+    target: "es2015",
+    // CSS 处理的目标浏览器，确保旧版移动端前缀与语法降级
+    cssTarget: ["chrome49", "ios9"],
+  },
   server: {
     proxy: {
       // 将所有 /api 开头的请求代理到目标服务器

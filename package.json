@@ -27,7 +27,8 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-i18next": "^15.7.3",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "regenerator-runtime": "^0.14.1"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",
@@ -52,5 +53,11 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"
-  }
+  },
+  "browserslist": [
+    "Android >= 5",
+    "iOS >= 9",
+    "last 2 ChromeAndroid versions",
+    "last 2 iOS major versions"
+  ]
 }
