@@ -44,27 +44,19 @@ export function Welcome({ onQuestionClick }: WelcomeProps) {
           // 清空容器
           lottieContainer.current.innerHTML = "";
 
-          console.log(
-            "Loading Lottie animation from:",
-            "/animations/welcome-bot.json"
-          );
+          // 通过 BASE_URL 生成正确的发布路径，兼容非根路径部署
+          const base = import.meta.env.BASE_URL || "/";
+          const animPath = `${base.replace(/\/$/, "")}/animations/welcome-bot.json`;
 
-          // 先测试文件是否存在
-          const response = await fetch("/animations/welcome-bot.json");
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+          console.log("Loading Lottie animation from:", animPath);
 
-          const animationData = await response.json();
-          console.log("Animation data loaded:", animationData);
-
-          // 使用 animationData 而不是 path
+          // 直接使用 lottie 的 path 让其内部处理加载，避免旧端 fetch 兼容问题
           const anim = lottie.loadAnimation({
             container: lottieContainer.current,
             renderer: "svg",
             loop: true,
             autoplay: true,
-            animationData: animationData,
+            path: animPath,
           });
 
           // 监听加载事件
