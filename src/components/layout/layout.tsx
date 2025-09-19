@@ -22,15 +22,15 @@ export function Layout({
         style={{
           marginTop: `${bannerHeight}px`,
         }}>
-        <button className="flex items-center text-sm">
+        {/* <button className="flex items-center text-sm">
           <ChevronLeftIcon className="w-5 h-5 mr-1" />
           {t("common.back")}
-        </button>
+        </button> */}
         <h1 className="flex-1 text-center text-base font-normal">{title}</h1>
-        <button className="flex items-center text-sm">
+        {/* <button className="flex items-center text-sm">
           <Cross2Icon className="w-5 h-5 mr-1" />
           {t("common.close")}
-        </button>
+        </button> */}
       </header>
       {/* main 区域，内容可以自由滚动 */}
       <main className="relative">{children}</main>

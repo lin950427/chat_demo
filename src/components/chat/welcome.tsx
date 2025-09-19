@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import lottie from "lottie-web";
 
 interface WelcomeProps {
   onQuestionClick?: (question: string) => void;
@@ -8,7 +7,6 @@ interface WelcomeProps {
 
 export function Welcome({ onQuestionClick }: WelcomeProps) {
   const { t } = useTranslation();
-  const lottieContainer = useRef<HTMLDivElement>(null);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
 
   // 获取当前语言的问题组
@@ -27,92 +25,35 @@ export function Welcome({ onQuestionClick }: WelcomeProps) {
     setCurrentGroupIndex((prev) => (prev + 1) % questionGroups.length);
   };
 
-  useEffect(() => {
-    // 首先设置一个默认的占位符
-    if (lottieContainer.current) {
-      lottieContainer.current.innerHTML = `
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #8B6D3F, #A67C52); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; animation: bounce 2s infinite;">
-                    🤖
-                </div>
-            `;
-    }
-
-    // 然后尝试加载 Lottie 动画
-    const loadAnimation = async () => {
-      if (lottieContainer.current) {
-        try {
-          // 清空容器
-          lottieContainer.current.innerHTML = "";
-
-          // 通过 BASE_URL 生成正确的发布路径，兼容非根路径部署
-          const base = import.meta.env.BASE_URL || "/";
-          const animPath = `${base.replace(/\/$/, "")}/animations/welcome-bot.json`;
-
-          console.log("Loading Lottie animation from:", animPath);
-
-          // 直接使用 lottie 的 path 让其内部处理加载，避免旧端 fetch 兼容问题
-          const anim = lottie.loadAnimation({
-            container: lottieContainer.current,
-            renderer: "svg",
-            loop: true,
-            autoplay: true,
-            path: animPath,
-          });
-
-          // 监听加载事件
-          anim.addEventListener("DOMLoaded", () => {
-            console.log("Lottie animation DOM loaded successfully");
-          });
-
-          anim.addEventListener("data_ready", () => {
-            console.log("Lottie animation data ready");
-          });
-
-          anim.addEventListener("config_ready", () => {
-            console.log("Lottie animation config ready");
-          });
-
-          anim.addEventListener("data_failed", (error) => {
-            console.error("Lottie animation data failed:", error);
-            // 恢复静态内容
-            if (lottieContainer.current) {
-              lottieContainer.current.innerHTML = `
-                                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #8B6D3F, #A67C52); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
-                                    🤖
-                                </div>
-                            `;
-            }
-          });
-
-          return () => anim.destroy();
-        } catch (error) {
-          console.error("Failed to load Lottie animation:", error);
-          // 如果动画加载失败，恢复静态内容
-          if (lottieContainer.current) {
-            lottieContainer.current.innerHTML = `
-                            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #8B6D3F, #A67C52); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
-                                🤖
-                            </div>
-                        `;
-          }
-        }
-      }
-    };
-
-    const timer = setTimeout(loadAnimation, 100);
-    return () => clearTimeout(timer);
-  }, []);
+  const base = import.meta.env.BASE_URL || "/";
+  const avatarSrc = `${base.replace(/\/$/, "")}/animations/xiaohong.png`;
 
   return (
     <div className="max-w-xl mx-auto w-full py-6">
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-        <div className="flex items-center -mt-2">
+        <div className="flex items-center mb-4">
           {/* 头像容器 */}
           <div
-            ref={lottieContainer}
-            className="w-36 h-36 -ml-6 -mr-2 flex-none flex items-center justify-center overflow-hidden"
-            style={{ minWidth: "144px", minHeight: "144px" }}
-          />
+            className="w-24 h-24 flex-none flex items-center justify-center overflow-hidden mr-4"
+          >
+            <img
+              src={avatarSrc}
+              alt="avatar"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent && parent.querySelector('[data-fallback]') == null) {
+                  const span = document.createElement('span');
+                  span.dataset.fallback = 'true';
+                  span.textContent = '🤖';
+                  span.className = 'text-4xl';
+                  parent.appendChild(span);
+                }
+              }}
+            />
+          </div>
           <div className="flex-1">
             <h2 className="text-3xl font-bold text-warm-brown-700 mb-2">
               {t("chat.welcome.greeting")}

@@ -69,8 +69,24 @@ export function Home({ onLanguageSelect }: HomeProps) {
         <div className="bg-white rounded-2xl p-8 shadow-lg border border-warm-brown-200">
           {/* Logo/Icon */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-warm-brown-600 to-warm-brown-700 rounded-full flex items-center justify-center">
-              <span className="text-3xl text-white">🤖</span>
+            <div className="w-28 h-28 mx-auto mb-4 overflow-hidden flex items-center justify-center">
+              <img
+                src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/animations/xiaohong.png`}
+                alt="avatar"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent && parent.querySelector('[data-fallback]') == null) {
+                    const span = document.createElement('span');
+                    span.dataset.fallback = 'true';
+                    span.textContent = '🤖';
+                    span.className = 'text-3xl text-white';
+                    parent.appendChild(span);
+                  }
+                }}
+              />
             </div>
             <h1 className="text-2xl font-bold text-warm-brown-800 mb-2">
               {t("home.title")}
