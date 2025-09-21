@@ -18,7 +18,7 @@ export default {
         'loading-dots': 'loading-dots 0.8s ease-in-out infinite',
       },
       colors: {
-        border: "#e5e7eb",
+        border: "#CBB486",
         input: "#e5e7eb",
         ring: "#8B6D47",
         background: "#ffffff",
@@ -26,6 +26,7 @@ export default {
         primary: {
           DEFAULT: "#8B6D47",
           foreground: "#ffffff",
+          background: "#ebd8b0",
         },
         secondary: {
           DEFAULT: "#f5f4f2",
@@ -67,7 +68,56 @@ export default {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      spacing: {
+        'safe-top': 'env(safe-area-inset-top, 0px)',
+        'safe-right': 'env(safe-area-inset-right, 0px)',
+        'safe-bottom': 'env(safe-area-inset-bottom, 0px)',
+        'safe-left': 'env(safe-area-inset-left, 0px)',
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+    function({ addUtilities }) {
+      const newUtilities = {
+        '.pt-safe': {
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+        },
+        '.pr-safe': {
+          paddingRight: 'env(safe-area-inset-right, 0px)',
+        },
+        '.pb-safe': {
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        },
+        '.pl-safe': {
+          paddingLeft: 'env(safe-area-inset-left, 0px)',
+        },
+        '.py-safe': {
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingBottom: 'env(safe-area-inset-bottom, 34px)',
+        },
+        '.px-safe': {
+          paddingLeft: 'env(safe-area-inset-left, 0px)',
+          paddingRight: 'env(safe-area-inset-right, 0px)',
+        },
+      };
+      addUtilities(newUtilities, ['responsive', 'hover']);
+    },
+    function({ addUtilities }) {
+      // 隐藏滚动条但保持可滚动功能的工具类
+      const scrollbarHideUtilities = {
+        '.no-scrollbar': {
+          /* IE and Edge */
+          '-ms-overflow-style': 'none',
+          /* Firefox */
+          'scrollbar-width': 'none',
+          /* Safari and Chrome */
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+        },
+      };
+      addUtilities(scrollbarHideUtilities);
+    },
+  ],
 }

@@ -129,3 +129,22 @@ export interface ChatAssistantsResponse {
   code: number
   data: ChatAssistant[]
 }
+
+// 用户认证相关类型
+export type Platform = 'eshimin' | 'weixinmini' | 'weixinmp' | 'alipaymini' | 'alipayfuwu'
+
+export interface UserInfo {
+  access_token: string
+  userId: string
+  username?: string
+  expires_in?: number
+  refresh_token?: string
+}
+
+export interface AuthState {
+  isAuthenticated: boolean
+  isLoading: boolean
+  userId?: string
+  platform?: Platform
+  error?: string
+}

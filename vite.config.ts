@@ -19,7 +19,7 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-  base: "/hongAi/",
+  // base: "/hongAi/",
   build: {
     // 现代构建的最低语法目标；legacy 插件会额外产出 ES5 兼容包
     target: "es2015",

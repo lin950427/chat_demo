@@ -26,7 +26,7 @@ export function Welcome({ onQuestionClick }: WelcomeProps) {
   };
 
   const base = import.meta.env.BASE_URL || "/";
-  const avatarSrc = `${base.replace(/\/$/, "")}/animations/xiaohong.png`;
+  const avatarSrc = `${base.replace(/\/$/, "")}/xiaohong.png`;
 
   return (
     <div className="max-w-xl mx-auto w-full py-6">

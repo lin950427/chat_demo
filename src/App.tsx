@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Home } from "./pages/home";
 import ChatPage from "./pages/chat";
+import { useAuth } from "./hooks/useAuth";
 import "./i18n";
 import { LANGUAGE_KEY } from "./constant";
 
-const queryClient = new QueryClient();
 
 function App() {
+  const { isAuthenticated, isLoading, userId } = useAuth();
+
   // 同步初始化状态，避免闪烁
   const [currentPage, setCurrentPage] = useState<"home" | "chat" | "loading">(
     () => {
@@ -25,14 +26,20 @@ function App() {
     setCurrentPage("chat");
   };
 
+  // 如果还在认证中，显示认证页面
+  if (!isAuthenticated || isLoading) {
+    return null;
+  }
+
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       {currentPage === "home" ? (
         <Home onLanguageSelect={handleLanguageSelect} />
       ) : (
-        <ChatPage />
+        <ChatPage userId={userId} />
       )}
-    </QueryClientProvider>
+    </>
+
   );
 }
 

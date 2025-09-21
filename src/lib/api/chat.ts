@@ -7,7 +7,8 @@ import type {
   SessionResponse,
   ChatAssistantsResponse,
   SessionListResponse,
-  ListSessionsParams
+  ListSessionsParams,
+  Message
 } from './types'
 
 const RAGFLOW_API_URL = import.meta.env.VITE_RAGFLOW_API_URL
@@ -34,7 +35,7 @@ export const createSession = async (
   chatId: string,
   name: string, 
   userId?: string
-): Promise<string> => {
+): Promise<{ id: string; messages: Message[] }> => {
   try {
     if (!chatId) {
       throw new Error('Chat ID is required')
@@ -51,7 +52,7 @@ export const createSession = async (
     )
 
     if (response.data.code === 0) {
-      return response.data.data.id
+      return { id: response.data.data.id, messages: response.data.data.messages }
     }
     
     throw new Error('Failed to create session')
@@ -99,7 +100,6 @@ export const sendMessage = async (
             if (line.trim() && line.startsWith('data:')) {
               try {
                 const data = JSON.parse(line.slice(5)) as ChatStreamResponse
-                console.log('SSE Data:', data)
                 // 发送给回调函数处理
                 onData?.(data)
               } catch (e) {

@@ -60,8 +60,8 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border-t">
-      <div className="flex gap-2 p-2 overflow-x-auto bg-muted/50">
+    <form onSubmit={handleSubmit} >
+      <div className="flex gap-2 py-1 pl-3 overflow-x-auto no-scrollbar">
         {categories.map((category) => {
           const Icon = category.icon;
           return (
@@ -70,14 +70,16 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
               type="button"
               onClick={() => handleCategoryClick(category)}
               disabled={disabled}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-full bg-background border shrink-0 hover:bg-muted/50 disabled:opacity-50 disabled:cursor-not-allowed">
-              <Icon className="w-3 h-3" />
+              className={`flex items-center gap-1 px-3 py-1 text-xs rounded-md leading-5 font-semibold border border-border shrink-0  hover:bg-warm-brown-50 disabled:opacity-50 disabled:cursor-not-allowed text-[#333333] ${disabled ? 'bg-[#f5f3ed] ' : 'bg-white'}`}>
+              <Icon className="w-3 h-4.5" color="#7F5B14" />
               {category.name}
             </button>
           );
         })}
       </div>
-      <div className="flex gap-2 p-4">
+      <div className="flex gap-2 pt-2 px-3 pb-5" style={{
+        marginBottom: 'env(safe-area-inset-bottom, 20px)',
+      }}>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -86,15 +88,16 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
           disabled={disabled}
           rows={1}
           className={cn(
-            "flex-1 min-h-[40px] max-h-[120px] rounded-md px-3 py-2 resize-none",
-            "bg-background border border-input",
-            "focus:outline-none focus:ring-2 focus:ring-ring",
-            disabled && "opacity-50 cursor-not-allowed"
+            "flex-1 min-h-[36px] max-h-[120px] rounded-md px-4 py-1 resize-none",
+            "bg-white border border-warm-brown-200",
+            "placeholder:text-neutral-500/30",
+            "focus:outline-none focus:ring-1 focus:ring-warm-brown-400",
+            disabled ? "cursor-not-allowed bg-[#eee7db]" : "bg-white"
           )}
           style={{
-            height: "auto",
-            minHeight: "40px",
-            maxHeight: "120px",
+            // height: "auto",
+            // minHeight: "px",
+            // maxHeight: "120px",
             overflow: "auto",
           }}
           onInput={(e) => {
@@ -107,10 +110,10 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
           type="submit"
           disabled={disabled || !input.trim()}
           className={cn(
-            "px-6 h-10 rounded-full text-sm font-medium flex items-center justify-center min-w-[80px] self-end",
-            "bg-primary text-primary-foreground",
-            "hover:bg-primary/90",
-            "focus:outline-none focus:ring-2 focus:ring-ring",
+            "px-4 h-9 rounded-md text-sm font-semibold flex items-center justify-center self-end",
+            "bg-[#C2A168] text-white",
+            "hover:bg-warm-brown-700",
+            "focus:outline-none focus:ring-1 focus:ring-warm-brown-400",
             (disabled || !input.trim()) && "opacity-50 cursor-not-allowed"
           )}>
           {disabled ? (

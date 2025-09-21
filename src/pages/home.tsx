@@ -71,7 +71,7 @@ export function Home({ onLanguageSelect }: HomeProps) {
           <div className="text-center mb-8">
             <div className="w-28 h-28 mx-auto mb-4 overflow-hidden flex items-center justify-center">
               <img
-                src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/animations/xiaohong.png`}
+                src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/xiaohong.png`}
                 alt="avatar"
                 className="w-full h-full object-cover"
                 onError={(e) => {
