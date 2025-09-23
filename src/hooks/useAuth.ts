@@ -5,7 +5,6 @@ import type { Platform, AuthState } from '../lib/api/types'
 import { getUrlParams } from '@/lib/utils'
 
 const ACCESS_TOKEN_KEY = 'user_access_token'
-const USER_ID_KEY = 'user_id'
 
 // 检测平台类型
 const getPlatformSource = (platform: Platform): 'app' | 'h5' => {
@@ -37,10 +36,7 @@ export function useAuth(): UseAuthReturn {
     { defaultValue: undefined }
   )
 
-  const [, setUserId] = useLocalStorageState<string | undefined>(
-    USER_ID_KEY,
-    { defaultValue: undefined }
-  )
+  const [userId, setUserId] = useState<string | undefined>(undefined)
 
 
   // 开始随申办授权
@@ -48,7 +44,10 @@ export function useAuth(): UseAuthReturn {
     try {
       const currentUrl = window.location.href.split('?')[0] // 移除现有参数
       const redirectUrl = await getFullRedirectUrl(currentUrl)
-      window.location.href = redirectUrl
+      if (redirectUrl) {
+        console.log("Redirecting to:", redirectUrl);
+        window.location.href = redirectUrl
+      }
     } catch (error) {
       console.error('Failed to get redirect URL:', error)
       // 如果授权失败，允许用户继续使用（无用户ID）
@@ -66,6 +65,7 @@ export function useAuth(): UseAuthReturn {
     const { code } = getUrlParams()
 
     if (code) {
+      console.log('获取到 code:', code, '直接使用 code 换取用户信息');
       // 有 code 参数，使用 code 获取用户信息
       try {
         const userInfo = await getUserInfoByCode(code)
@@ -77,6 +77,8 @@ export function useAuth(): UseAuthReturn {
           userId: userInfo.userId,
           platform: 'eshimin'
         })
+
+        console.log('随申办认证获取到用户信息:', userInfo)
 
         // 清除 URL 中的 code 参数
         const url = new URL(window.location.href)
@@ -93,10 +95,12 @@ export function useAuth(): UseAuthReturn {
     } else if (accessToken) {
       // 有存储的 access_token，尝试获取用户信息
       try {
+        console.log('使用存储的 access token 获取用户信息:', accessToken);
         const userInfo = await getUserInfo({
           accessToken,
           source: 'app'
         })
+        console.log('使用存储的 access token 获取到用户信息:', userInfo)
         setUserId(userInfo.userId)
         setAuthState({
           isAuthenticated: true,
@@ -105,6 +109,7 @@ export function useAuth(): UseAuthReturn {
           platform: 'eshimin'
         })
       } catch (error) {
+        console.log('使用存储的 access token 获取用户信息失败:', error)
         console.error('Access token expired:', error)
         // token 过期，清除存储并重新授权
         setAccessToken(undefined)
@@ -126,6 +131,8 @@ export function useAuth(): UseAuthReturn {
         source
       })
 
+      console.log('第三方认证获取到用户信息:', userInfo)
+
       setUserId(userInfo.userId)
       setAuthState({
         isAuthenticated: true,
@@ -146,6 +153,7 @@ export function useAuth(): UseAuthReturn {
 
   // 主认证函数
   const authenticateUser = useCallback(async () => {
+    console.log('开始认证流程');
     setAuthState(prev => ({ ...prev, isLoading: true, error: undefined }))
 
     const { platform, accessToken: urlAccessToken } = getUrlParams()
@@ -160,8 +168,11 @@ export function useAuth(): UseAuthReturn {
     }
 
     if (platform === 'eshimin') {
+      console.log('进入随申办认证流程');
+
       await handleEshiminAuth()
     } else if (urlAccessToken && ['weixinmini', 'weixinmp', 'alipaymini', 'alipayfuwu'].includes(platform)) {
+      console.log('进入第三方平台认证流程');
       await handleThirdPartyAuth(platform, urlAccessToken)
     } else {
       setAuthState({
@@ -191,8 +202,10 @@ export function useAuth(): UseAuthReturn {
     }
   }, [])
 
+
   return {
     ...authState,
     authenticateUser,
+    userId
   }
 }

@@ -101,59 +101,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
   const { t } = useTranslation();
   const isUser = message.role === "user";
 
-  if (isUser) {
-    return (
-      <div className={cn("flex w-full justify-end mb-4", className)}>
-        <div
-          className={cn(
-            "flex flex-col gap-2 rounded-md px-3 py-2.5 max-w-[88%] bg-primary text-primary-foreground"
-          )}>
-          <div className="text-sm whitespace-pre-wrap break-words">
-            {message.content}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const handlePreviewDocument = async (
-    datasetId: string,
-    documentId: string,
-    fileName: string
-  ) => {
-    try {
-      console.log("开始预览文档:", { datasetId, documentId, fileName });
-
-      // 使用已有的 downloadDocument API 获取文档
-      const blob = await downloadDocument(datasetId, documentId, fileName);
-
-      console.log("文档下载成功:", { type: blob.type, size: blob.size });
-
-      // 创建 blob URL
-      const url = URL.createObjectURL(blob);
-
-      // 使用 a 标签模拟点击，不限制文件类型
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName;
-      link.style.display = "none";
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // 清理对象URL
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch (error) {
-      console.error("文档预览失败:", error);
-      alert(
-        `文档预览失败: ${error instanceof Error ? error.message : "未知错误"}`
-      );
-    }
-  };
-
-  // 从引用中获取不重复的文档列表
-  const getUniqueDocuments = () => {
+  const uniquedReferences = useMemo(() => {
     if (message.references?.chunks) {
       // 处理实时对话的引用格式
       const documents = new Map();
@@ -182,15 +130,66 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
       return Array.from(documents.values());
     }
     return [];
+  }, [message.reference, message.references?.chunks]);
+
+  if (isUser) {
+    return (
+      <div className={cn("flex w-full justify-end mb-6", className)}>
+        <div
+          className={cn(
+            "flex flex-col rounded-md px-3 py-2.5 max-w-[88%] bg-primary text-primary-foreground"
+          )}>
+          <div className="text-sm whitespace-pre-wrap break-words">
+            {message.content}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const handlePreviewDocument = async (
+    datasetId: string,
+    documentId: string,
+    fileName: string
+  ) => {
+    try {
+
+      // 使用已有的 downloadDocument API 获取文档
+      const blob = await downloadDocument(datasetId, documentId, fileName);
+
+
+      // 创建 blob URL
+      const url = URL.createObjectURL(blob);
+
+      // 使用 a 标签模拟点击，不限制文件类型
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.style.display = "none";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // 清理对象URL
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+      console.error("文档预览失败:", error);
+      alert(
+        `文档预览失败: ${error instanceof Error ? error.message : "未知错误"}`
+      );
+    }
   };
+
   // 获取头像路径
   const base = import.meta.env.BASE_URL || "/";
   const avatarSrc = `${base.replace(/\/$/, "")}/xiaohong.png`;
+  const loadingGifSrc = `${base.replace(/\/$/, "")}/loading.gif`;
 
   return (
     <>
-      <div className={cn("flex w-full mb-4", className)}>
-        <div className="flex flex-row gap-3">
+      <div className={cn("flex w-full mb-6", className)}>
+        <div className="flex flex-row">
           {/* AI头像 */}
           <div className="flex-shrink-0 w-[30px] h-[30px] overflow-hidden rounded-[6px] bg-primary-background px-0.5 pt-0.5">
             <img
@@ -211,8 +210,8 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
               }}
             />
           </div>
-
-          <div className="flex flex-col gap-2 flex-1">
+          <span className="w-3 inline-block" />
+          <div className="flex-1">
             <div
               className={cn(
                 "flex flex-col rounded-md overflow-hidden max-w-[88%] bg-white border border-slate-200 transition-opacity duration-200",
@@ -222,7 +221,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
                 <div className="text-sm leading-5 whitespace-pre-wrap break-words text-slate-900">
 
                   {isLoading ? (
-                    <span className="inline-flex items-center text-nowrap">正在输入<img src='./loading.gif' className="w-5 mr-3" /></span>
+                    <span className="inline-flex items-center text-nowrap">正在输入<img src={loadingGifSrc} className="w-5 mr-3" /></span>
                   ) : (
                     <MessageContent content={message.content} />
                   )}
@@ -230,16 +229,16 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
               </div>
 
               {/* 引用资料 */}
-              {getUniqueDocuments().length > 0 && (
+              {uniquedReferences.length > 0 && (
                 <div className="border-t border-slate-200 bg-slate-50">
                   <div className="p-3">
                     <div className="text-xs text-slate-600 mb-2">
                       {t("chat.references.summary", {
-                        count: getUniqueDocuments().length,
+                        count: uniquedReferences.length,
                       })}
                     </div>
-                    <div className="flex flex-col gap-2">
-                      {getUniqueDocuments().map((doc, index) => (
+                    <div className="flex flex-col">
+                      {uniquedReferences.map((doc, index) => (
                         <button
                           key={doc.document_id}
                           onClick={() =>
@@ -251,7 +250,8 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
                           }
                           disabled={isLoading}
                           className={cn(
-                            "flex items-center gap-2 p-2 rounded-md transition-colors group",
+                            "flex items-center p-2 rounded-md transition-colors group",
+                            index !== uniquedReferences.length - 1 ? "mb-2" : "",
                             isLoading
                               ? "opacity-50 cursor-not-allowed"
                               : "hover:bg-muted/50 active:bg-muted/70"
@@ -267,6 +267,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
                               <FileTextIcon className="w-4 h-4 text-primary" />
                             )}
                           </div>
+                          <span className="w-2 inline-block" />
                           <div className="flex-1 min-w-0 text-left">
                             <div className="text-sm truncate">
                               {index + 1}. {doc.document_name}
@@ -285,7 +286,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
       </div>
       {/* 欢迎消息的推荐问题 */}
       {isWelcomeMessage && (
-        <div className="flex -mt-5">
+        <div className="flex -mt-3">
           <div className="w-[42px]" />
           <div className="flex-1">
             <div className="max-w-[88%]">

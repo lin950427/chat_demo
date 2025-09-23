@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 import { cn } from "@/lib/utils";
 import { PersonIcon, GearIcon, HomeIcon } from "@radix-ui/react-icons";
 import { LoadingDots } from "@/components/ui/loading-dots";
 import { useTranslation } from "react-i18next";
+import useSWR from "swr";
+import { getQuestions } from "@/lib/api/question";
+import type { SecondaryQuestions } from "@/lib/api/types";
 
 interface ChatInputProps {
   onSubmit: (message: string) => void;
@@ -11,33 +14,17 @@ interface ChatInputProps {
 }
 
 export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [input, setInput] = useState("");
+  const isZH = i18n.language === "zh-CN"
+  const { data: questionsInfo } = useSWR(['getQuestions'], getQuestions);
+  const questions = useMemo(() => questionsInfo?.part2 || [], [questionsInfo])
 
-  const categories = [
-    {
-      id: "ai",
-      name: "人工客服",
-      icon: PersonIcon,
-      message: "请为我转接人工客服",
-    },
-    {
-      id: "policy",
-      name: "人才政策",
-      icon: GearIcon,
-      message: "请介绍一下人才政策",
-    },
-    {
-      id: "district",
-      name: "虹口区补贴政策",
-      icon: HomeIcon,
-      message: "请介绍一下虹口区补贴政策",
-    },
-  ];
 
-  const handleCategoryClick = (category: (typeof categories)[0]) => {
-    if (disabled) return;
-    onSubmit(category.message);
+  const icons = [PersonIcon, GearIcon, HomeIcon]
+
+  const handleQuestionClick = (question: SecondaryQuestions) => {
+    onSubmit(isZH ? question.zh_question : question.en_question);
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -61,25 +48,23 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
 
   return (
     <form onSubmit={handleSubmit} >
-      <div className="flex gap-2 py-1 pl-3 overflow-x-auto no-scrollbar">
-        {categories.map((category) => {
-          const Icon = category.icon;
+      <div className="flex py-1 pl-3 overflow-x-auto no-scrollbar">
+        {questions.map((category, index) => {
+          const Icon = icons[index % 3];
           return (
             <button
-              key={category.id}
+              key={index}
               type="button"
-              onClick={() => handleCategoryClick(category)}
+              onClick={() => handleQuestionClick(category)}
               disabled={disabled}
-              className={`flex items-center gap-1 px-3 py-1 text-xs rounded-md leading-5 font-semibold border border-border shrink-0  hover:bg-warm-brown-50 disabled:opacity-50 disabled:cursor-not-allowed text-[#333333] ${disabled ? 'bg-[#f5f3ed] ' : 'bg-white'}`}>
+              className={`${index !== questions.length - 1 ? 'mr-2' : ''} flex items-center px-3 py-1 text-xs rounded-md leading-5 font-semibold border border-border shrink-0  hover:bg-warm-brown-50 disabled:opacity-50 disabled:cursor-not-allowed text-[#333333] ${disabled ? 'bg-[#f5f3ed] ' : 'bg-white'}`}>
               <Icon className="w-3 h-4.5" color="#7F5B14" />
-              {category.name}
+              {isZH ? category.zh_title : category.en_title}
             </button>
           );
         })}
       </div>
-      <div className="flex gap-2 pt-2 px-3 pb-5" style={{
-        marginBottom: 'env(safe-area-inset-bottom, 20px)',
-      }}>
+      <div className="flex pt-2 pb-5 px-3">
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -106,6 +91,7 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
             target.style.height = `${Math.min(target.scrollHeight, 120)}px`;
           }}
         />
+        <span className="w-2 inline-block" />
         <button
           type="submit"
           disabled={disabled || !input.trim()}

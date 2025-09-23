@@ -53,12 +53,11 @@ export function MessageList({ messages, isLoading, onQuestionClick, hasSession }
         })
     }, [messages])
 
-    console.log('MessageList Rendered, messages:', messages)
 
     return (
         <ScrollArea.Root className="h-full w-screen">
             <ScrollArea.Viewport className="h-full w-full" ref={scrollRef}>
-                <div className="flex flex-col gap-4 px-4 pt-7 pb-4">
+                <div className="flex flex-col px-4 pt-7 pb-4">
                     {!hasSession ? (
                         null
                     ) : (
@@ -71,6 +70,7 @@ export function MessageList({ messages, isLoading, onQuestionClick, hasSession }
                                     isLoading={false}
                                     isWelcomeMessage={messages.length === 1 && message.role !== 'user'}
                                     onQuestionClick={onQuestionClick}
+                                    // className='mb-4'
                                 />
                             ))}
 
@@ -95,7 +95,7 @@ export function MessageList({ messages, isLoading, onQuestionClick, hasSession }
                 {showScrollBottom && (
                     <button
                         onClick={scrollToBottom}
-                        className="w-[30px] h-[30px] bg-white left-1/2 -translate-x-1/2 flex justify-center border border-solid border-[#D8C9A9] items-center fixed bottom-28 right-4 z-[20] p-2 rounded-full transition-colors"
+                        className="w-[30px] h-[30px] bg-white left-1/2 -translate-x-1/2 flex justify-center border border-solid border-[#D8C9A9] items-center fixed bottom-[calc(env(safe-area-inset-bottom,32px)+130px)] right-4 z-[20] p-2 rounded-full transition-colors"
                         aria-label="返回底部"
                     >
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">

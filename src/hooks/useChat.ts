@@ -21,6 +21,7 @@ interface UseChatProps {
 }
 
 export function useChat({ userId }: UseChatProps = {}): UseChat {
+    console.log(`useChat 中的 userId: ${userId}`)
     const [messages, setMessages] = useState<Message[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [sessions, setSessions] = useState<Session[]>([])
@@ -94,7 +95,7 @@ export function useChat({ userId }: UseChatProps = {}): UseChat {
                         await initSession(chatId, currentSessionId)
                     } else {
                         // 如果没有会话ID，直接创建一个新会话
-                        const newSession = await chatApi.createSession(chatId, '新对话', userId)
+                        const newSession = await chatApi.createSession(chatId, 'new session', userId)
                         setCurrentSessionId(newSession?.id)
                         // 新会话无需加载历史消息，直接设置空消息列表
                         setMessages(newSession?.messages || [])
@@ -125,7 +126,7 @@ export function useChat({ userId }: UseChatProps = {}): UseChat {
 
                 // 万一会话ID丢失，创建一个新会话
                 if (!sessionId) {
-                    const newSession = await chatApi.createSession(currentChatId, '新对话', userId)
+                    const newSession = await chatApi.createSession(currentChatId, 'new session', userId)
                     setCurrentSessionId(newSession?.id)
                     sessionId = newSession?.id
                 }

@@ -148,3 +148,25 @@ export interface AuthState {
   platform?: Platform
   error?: string
 }
+
+export interface QuestionData {
+  generated_at: string
+  charset: string
+  part1: {
+    zh: string
+    en: string
+  }[]
+  part2: {
+    zh_title: string
+    en_title: string
+    zh_question: string
+    en_question: string
+  }[]
+}
+
+export interface SecondaryQuestions {
+  zh_title: string
+  en_title: string
+  zh_question: string
+  en_question: string
+}

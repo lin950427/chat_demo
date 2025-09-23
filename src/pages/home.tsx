@@ -63,6 +63,10 @@ export function Home({ onLanguageSelect }: HomeProps) {
     );
   }
 
+  const base = import.meta.env.BASE_URL || "/";
+  const avatarSrc = `${base.replace(/\/$/, "")}/xiaohong.gif`;
+
+
   return (
     <div className="min-h-dvh bg-gradient-to-br from-warm-brown-50 to-warm-brown-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
@@ -71,7 +75,7 @@ export function Home({ onLanguageSelect }: HomeProps) {
           <div className="text-center mb-8">
             <div className="w-28 h-28 mx-auto mb-4 overflow-hidden flex items-center justify-center">
               <img
-                src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/xiaohong.png`}
+                src={avatarSrc}
                 alt="avatar"
                 className="w-full h-full object-cover"
                 onError={(e) => {
@@ -101,12 +105,13 @@ export function Home({ onLanguageSelect }: HomeProps) {
                 key={language.code}
                 onClick={() => handleLanguageSelect(language.code)}
                 className={cn(
-                  "w-full p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-4",
+                  "w-full p-4 rounded-xl border-2 transition-all duration-200 flex items-center",
                   selectedLanguage === language.code
                     ? "border-warm-brown-600 bg-warm-brown-50 shadow-md"
                     : "border-warm-brown-200 hover:border-warm-brown-400 hover:bg-warm-brown-25"
                 )}>
                 <span className="text-2xl">{language.flag}</span>
+                <span className="inline-block w-4" />
                 <div className="flex-1 text-left">
                   <div className="font-medium text-warm-brown-800">
                     {language.nativeName}
