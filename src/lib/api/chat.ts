@@ -22,6 +22,7 @@ const createApiInstance = (): AxiosInstance => {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${RAGFLOW_API_KEY}`
     },
+    timeout: 600000, // 设置60秒超时时间
   })
 }
 
@@ -94,16 +95,25 @@ export const sendMessage = async (
         },
         onDownloadProgress: (progressEvent) => {
           const chunk = progressEvent.event.target.responseText
-          const lines = chunk.split('\n')
+          const lines = chunk.split('\n').filter((item: string) => item !== '');
+
+          const length = lines.length;
+          if (length > 3) {
+            // 只保留最后3行，防止内存占用过高
+            lines.splice(0, length - 3);
+          }
+
+          console.log('Received SSE chunk:', lines);
           
           for (const line of lines) {
             if (line.trim() && line.startsWith('data:')) {
               try {
                 const data = JSON.parse(line.slice(5)) as ChatStreamResponse
                 // 发送给回调函数处理
+                console.log('Parsed SSE data:', data);
                 onData?.(data)
               } catch (e) {
-                console.error('Failed to parse SSE message:', e)
+                console.error('Failed to parse SSE message:', line, e)
               }
             }
           }

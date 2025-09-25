@@ -24,7 +24,17 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
   const icons = [PersonIcon, GearIcon, HomeIcon]
 
   const handleQuestionClick = (question: SecondaryQuestions) => {
+    if (disabled) return;
     onSubmit(isZH ? question.zh_question : question.en_question);
+    resetTextareaHeight();
+  };
+
+  // 重置输入框高度
+  const resetTextareaHeight = () => {
+    const textarea = document.querySelector('textarea');
+    if (textarea) {
+      textarea.style.height = '36px'; // 恢复到初始高度
+    }
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -33,6 +43,7 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
 
     onSubmit(input.trim());
     setInput("");
+    resetTextareaHeight();
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -42,6 +53,7 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
       if (!input.trim()) return;
       onSubmit(input.trim());
       setInput("");
+      resetTextareaHeight();
     }
     // 移动端和普通回车都是换行，不做任何处理
   };
@@ -57,8 +69,8 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
               type="button"
               onClick={() => handleQuestionClick(category)}
               disabled={disabled}
-              className={`${index !== questions.length - 1 ? 'mr-2' : ''} flex items-center px-3 py-1 text-xs rounded-md leading-5 font-semibold border border-border shrink-0  hover:bg-warm-brown-50 disabled:opacity-50 disabled:cursor-not-allowed text-[#333333] ${disabled ? 'bg-[#f5f3ed] ' : 'bg-white'}`}>
-              <Icon className="w-3 h-4.5" color="#7F5B14" />
+              className={`mr-2 flex items-center px-3 py-1 text-xs rounded-md leading-5 font-semibold border border-border shrink-0  hover:bg-warm-brown-50 disabled:opacity-50 disabled:cursor-not-allowed text-[#333333] ${disabled ? 'bg-[#f5f3ed] ' : 'bg-white'}`}>
+              <Icon className="w-3 h-4.5 mr-1" color="#7F5B14" />
               {isZH ? category.zh_title : category.en_title}
             </button>
           );

@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { LANGUAGE_KEY } from "@/constant";
 
-interface HomeProps {
-  onLanguageSelect: (language: string) => void;
-}
-
-export function Home({ onLanguageSelect }: HomeProps) {
+export function Home() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [selectedLanguage, setSelectedLanguage] = useState<string>("");
   const [isReady, setIsReady] = useState(false);
 
@@ -16,15 +14,16 @@ export function Home({ onLanguageSelect }: HomeProps) {
   useEffect(() => {
     const savedLanguage = localStorage.getItem(LANGUAGE_KEY);
     if (savedLanguage) {
-      setSelectedLanguage(savedLanguage);
-      i18n.changeLanguage(savedLanguage);
-    } else {
-      // 未选择语言时默认展示中文
-      setSelectedLanguage("zh-CN");
-      i18n.changeLanguage("zh-CN");
+      // 如果已经选择了语言，直接跳转到聊天页面
+      navigate('/chat');
+      return;
     }
+    
+    // 未选择语言时默认展示中文
+    setSelectedLanguage("zh-CN");
+    i18n.changeLanguage("zh-CN");
     setIsReady(true);
-  }, [i18n]);
+  }, [i18n, navigate]);
 
   const languages = [
     {
@@ -41,16 +40,13 @@ export function Home({ onLanguageSelect }: HomeProps) {
     },
   ];
 
-  const handleLanguageSelect = (languageCode: string) => {
-    setSelectedLanguage(languageCode);
-    i18n.changeLanguage(languageCode);
-  };
-
-  const handleStart = () => {
-    if (selectedLanguage) {
-      onLanguageSelect(selectedLanguage);
-    }
-  };
+  const handleSelect = (language: string) => {
+    setSelectedLanguage(language);
+    i18n.changeLanguage(language);
+    localStorage.setItem(LANGUAGE_KEY, language);
+    // Navigate to chat page after language selection
+    navigate('/chat');
+  };  // 不再需要 handleStart 函数
 
   // 等待i18n初始化完成
   if (!isReady) {
@@ -103,7 +99,7 @@ export function Home({ onLanguageSelect }: HomeProps) {
             {languages.map((language) => (
               <button
                 key={language.code}
-                onClick={() => handleLanguageSelect(language.code)}
+                onClick={() => handleSelect(language.code)}
                 className={cn(
                   "w-full p-4 rounded-xl border-2 transition-all duration-200 flex items-center",
                   selectedLanguage === language.code
@@ -142,7 +138,7 @@ export function Home({ onLanguageSelect }: HomeProps) {
 
           {/* Start Button */}
           <button
-            onClick={handleStart}
+            onClick={() => selectedLanguage && handleSelect(selectedLanguage)}
             disabled={!selectedLanguage}
             className={cn(
               "w-full py-3 px-4 rounded-xl font-medium transition-all duration-200",

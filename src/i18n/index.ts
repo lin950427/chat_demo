@@ -36,6 +36,9 @@ const zhCN = {
     references: {
       summary: "参考{{count}}篇内容为你总结",
     },
+    possibleApplications: "你可能要申请事项",
+    applyNow: "前往申请",
+    thinking: "正在思考中...",
   },
   questions: {
     group1: [
@@ -105,6 +108,9 @@ const enUS = {
     references: {
       summary: "Referenced {{count}} documents to summarize for you",
     },
+    possibleApplications: "Possible Applications",
+    applyNow: "Apply Now",
+    thinking: "Thinking...",
   },
   questions: {
     group1: [

@@ -11,6 +11,7 @@ interface ChatPageProps {
 export default function ChatPage({ userId }: ChatPageProps) {
   const { messages, sendMessage, isLoading, currentSessionId } = useChat({ userId });
 
+
   return (
     <Layout bannerHeight={0} className="bg-warm-brown-50">
       <ChatHeader />

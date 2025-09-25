@@ -1,52 +1,46 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Home } from "./pages/home";
 import ChatPage from "./pages/chat";
+import { FakeLink } from "./pages/fake-link";
 import { useAuth } from "./hooks/useAuth";
 import "./i18n";
-import { LANGUAGE_KEY } from "./constant";
 import { SWRConfig } from "swr";
 import { swrConfig } from "./lib/swr-config";
 import { initVConsole } from "./lib/debug";
 
 
 function App() {
-  const { isAuthenticated, isLoading, userId } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   // useEffect(() => {
   //   // 初始化调试工具
   //   initVConsole();
   // }, []);
 
-  // 同步初始化状态，避免闪烁
-  const [currentPage, setCurrentPage] = useState<"home" | "chat" | "loading">(
-    () => {
-      try {
-        const savedLanguage = localStorage.getItem(LANGUAGE_KEY);
-        return savedLanguage ? "chat" : "home";
-      } catch {
-        return "home";
-      }
-    }
-  );
-
-  const handleLanguageSelect = (language: string) => {
-    localStorage.setItem(LANGUAGE_KEY, language);
-    setCurrentPage("chat");
-  };
-
-  // 如果还在认证中，显示认证页面
-  if (!isAuthenticated || isLoading) {
+  if (isLoading) {
     return null;
   }
 
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  const base = import.meta.env.BASE_URL || "/";
+  const basename = base.replace(/\/$/, "");
 
   return (
     <SWRConfig value={swrConfig}>
-      {currentPage === "home" ? (
-        <Home onLanguageSelect={handleLanguageSelect} />
-      ) : (
-        <ChatPage userId={userId} />
-      )}
+      <BrowserRouter basename={basename}>
+        <div className="h-screen w-full overflow-hidden">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/fake-link" element={<FakeLink />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
     </SWRConfig>
   );
 }

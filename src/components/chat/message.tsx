@@ -10,44 +10,50 @@ import remarkGfm from 'remark-gfm'
 import { memo, useMemo } from 'react'
 
 // 按钮组件
-const CustomButton = ({ variant, url, children }: { variant: 'primary' | 'secondary'; url: string; children: React.ReactNode }) => {
-  const className = variant === 'primary'
-    ? 'bg-warm-brown-500 text-white hover:bg-warm-brown-600'
-    : 'bg-warm-brown-100 text-warm-brown-800 hover:bg-warm-brown-200';
+const CustomButton = ({ url, className, children }: { url: string; className?: string; children: React.ReactNode }) => {
+
+
+  const handleClick = () => {
+    if (!url) return;
+    window.location.href = url
+  }
 
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+      onClick={handleClick}
       className={cn(
-        "inline-flex items-center px-3 py-1.5 rounded-md text-sm transition-colors no-underline my-1 mx-1",
+        "bg-[#c2a168] text-xs text-white px-1.5 py-1 font-semibold rounded-md hover:bg-warm-brown-600 transition-colors",
         className
       )}
     >
       {children}
-    </a>
+    </button>
   );
 };
 
 // 缓存正则表达式
-const buttonRegex = /<<BUTTON\|(primary|secondary)\|([^|]+)\|([^>]+)>>/;
+const buttonRegex = /<<BUTTON\|([^|]+)\|([^>]+)>>/;
+
+// 提取按钮数据的函数
+const extractButtons = (content: string) => {
+  const buttons: { variant: 'primary' | 'secondary'; text: string; url: string }[] = [];
+  let cleanContent = content;
+
+  // 提取所有按钮并收集它们
+  cleanContent = content.replace(buttonRegex, (_, url, text) => {
+    buttons.push({ variant: 'primary', text, url });
+    return ''; // 从内容中移除按钮标记
+  });
+
+  console.log('Extracted buttons:', cleanContent.trim());
+
+  return { buttons, cleanContent: cleanContent.trim() };
+};
 
 // 消息内容组件
 const MessageContent = memo(({ content }: { content: string }) => {
-  // 使用 useMemo 缓存处理后的内容
-  const processedContent = useMemo(() => {
-    // 检查是否包含自定义按钮格式，避免不必要的处理
-    if (!content.includes('<<BUTTON|')) {
-      return content;
-    }
+  // 使用 useMemo 缓存处理后的内容和按钮
 
-    // 将按钮格式转换为 markdown 链接
-    return content.replace(
-      buttonRegex,
-      (_, variant, text, url) => `[${text}](button:${variant}:${url})`
-    );
-  }, [content]);
 
   return (
     <Markdown
@@ -55,32 +61,18 @@ const MessageContent = memo(({ content }: { content: string }) => {
       components={{
         p: ({ ...props }) => <p style={{ margin: 0 }} {...props} />,
         br: ({ ...props }) => <br style={{ display: 'none' }} {...props} />,
-        a: ({ href, children }) => {
-          if (href?.startsWith('button:')) {
-            const [, variant, url] = href.split(':');
-            return (
-              <CustomButton
-                variant={variant as 'primary' | 'secondary'}
-                url={url}
-              >
-                {children}
-              </CustomButton>
-            );
-          }
-          return (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-warm-brown-600 hover:text-warm-brown-800 underline"
-            >
-              {children}
-            </a>
-          );
-        }
+        a: ({ href, children }) => (
+          <a
+            href={href}
+            rel="noopener noreferrer"
+            className="text-warm-brown-600 break-all hover:text-warm-brown-800 underline"
+          >
+            {children}
+          </a>
+        )
       }}
     >
-      {processedContent}
+      {content}
     </Markdown>
   );
 });
@@ -101,36 +93,40 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
   const { t } = useTranslation();
   const isUser = message.role === "user";
 
-  const uniquedReferences = useMemo(() => {
-    if (message.references?.chunks) {
-      // 处理实时对话的引用格式
-      const documents = new Map();
-      message.references.chunks.forEach((chunk) => {
-        if (!documents.has(chunk.document_id)) {
-          documents.set(chunk.document_id, {
-            document_id: chunk.document_id,
-            document_name: chunk.document_name,
-            dataset_id: chunk.dataset_id,
-          });
-        }
-      });
-      return Array.from(documents.values());
-    } else if (message.reference) {
-      // 处理历史消息的引用格式
-      const documents = new Map();
-      message.reference.forEach((ref) => {
-        if (!documents.has(ref.document_id)) {
-          documents.set(ref.document_id, {
-            document_id: ref.document_id,
-            document_name: ref.document_name,
-            dataset_id: ref.dataset_id,
-          });
-        }
-      });
-      return Array.from(documents.values());
-    }
-    return [];
-  }, [message.reference, message.references?.chunks]);
+  const { buttons, cleanContent } = useMemo(() => {
+    return extractButtons(message.content);
+  }, [message.content]);
+
+  // const uniquedReferences = useMemo(() => {
+  //   if (message.references?.chunks) {
+  //     // 处理实时对话的引用格式
+  //     const documents = new Map();
+  //     message.references.chunks.forEach((chunk) => {
+  //       if (!documents.has(chunk.document_id)) {
+  //         documents.set(chunk.document_id, {
+  //           document_id: chunk.document_id,
+  //           document_name: chunk.document_name,
+  //           dataset_id: chunk.dataset_id,
+  //         });
+  //       }
+  //     });
+  //     return Array.from(documents.values());
+  //   } else if (message.reference) {
+  //     // 处理历史消息的引用格式
+  //     const documents = new Map();
+  //     message.reference.forEach((ref) => {
+  //       if (!documents.has(ref.document_id)) {
+  //         documents.set(ref.document_id, {
+  //           document_id: ref.document_id,
+  //           document_name: ref.document_name,
+  //           dataset_id: ref.dataset_id,
+  //         });
+  //       }
+  //     });
+  //     return Array.from(documents.values());
+  //   }
+  //   return [];
+  // }, [message.reference, message.references?.chunks]);
 
   if (isUser) {
     return (
@@ -147,39 +143,39 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
     );
   }
 
-  const handlePreviewDocument = async (
-    datasetId: string,
-    documentId: string,
-    fileName: string
-  ) => {
-    try {
+  // const handlePreviewDocument = async (
+  //   datasetId: string,
+  //   documentId: string,
+  //   fileName: string
+  // ) => {
+  //   try {
 
-      // 使用已有的 downloadDocument API 获取文档
-      const blob = await downloadDocument(datasetId, documentId, fileName);
+  //     // 使用已有的 downloadDocument API 获取文档
+  //     const blob = await downloadDocument(datasetId, documentId, fileName);
 
 
-      // 创建 blob URL
-      const url = URL.createObjectURL(blob);
+  //     // 创建 blob URL
+  //     const url = URL.createObjectURL(blob);
 
-      // 使用 a 标签模拟点击，不限制文件类型
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName;
-      link.style.display = "none";
+  //     // 使用 a 标签模拟点击，不限制文件类型
+  //     const link = document.createElement("a");
+  //     link.href = url;
+  //     link.download = fileName;
+  //     link.style.display = "none";
 
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
 
-      // 清理对象URL
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch (error) {
-      console.error("文档预览失败:", error);
-      alert(
-        `文档预览失败: ${error instanceof Error ? error.message : "未知错误"}`
-      );
-    }
-  };
+  //     // 清理对象URL
+  //     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  //   } catch (error) {
+  //     console.error("文档预览失败:", error);
+  //     alert(
+  //       `文档预览失败: ${error instanceof Error ? error.message : "未知错误"}`
+  //     );
+  //   }
+  // };
 
   // 获取头像路径
   const base = import.meta.env.BASE_URL || "/";
@@ -218,18 +214,18 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
               )}>
               {/* 消息内容 */}
               <div className="px-3 py-2.5">
-                <div className="text-sm leading-5 whitespace-pre-wrap break-words text-slate-900">
+                <div className="w-full text-sm leading-5 whitespace-pre-wrap break-words text-slate-900">
 
                   {isLoading ? (
                     <span className="inline-flex items-center text-nowrap">正在输入<img src={loadingGifSrc} className="w-5 mr-3" /></span>
                   ) : (
-                    <MessageContent content={message.content} />
+                    <MessageContent content={cleanContent} />
                   )}
                 </div>
               </div>
 
               {/* 引用资料 */}
-              {uniquedReferences.length > 0 && (
+              {/* {uniquedReferences.length > 0 && (
                 <div className="border-t border-slate-200 bg-slate-50">
                   <div className="p-3">
                     <div className="text-xs text-slate-600 mb-2">
@@ -278,12 +274,34 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
                     </div>
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
         </div>
-
       </div>
+      {/* 消息中的自定义按钮 */}
+      {buttons.length > 0 && (
+        <div className="flex -mt-3">
+          <div className="w-[42px]" />
+          <div className="flex-1">
+            <div className="max-w-[88%]">
+              <div className="bg-white px-3 py-2.5 text-sm rounded-md mb-6">
+                <h4 className="mb-2">{t("chat.possibleApplications")}</h4>
+                {buttons.map((button, index) => (
+                  <div key={index} className={`flex justify-between px-3 py-2.5 bg-[#f7f4ef] rounded-md items-center ${index !== buttons.length - 1 ? "mb-2" : ""}`}>
+                    <span className="font-semibold">
+                      {button.text}
+                    </span>
+                    <CustomButton key={index} url={button.url}>
+                      {t("chat.applyNow")}
+                    </CustomButton>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* 欢迎消息的推荐问题 */}
       {isWelcomeMessage && (
         <div className="flex -mt-3">
