@@ -22,6 +22,14 @@ const zhCN = {
   },
   chat: {
     title: "AI助手",
+    header: {
+      greeting: {
+        morning: "早上好",
+        afternoon: "下午好",
+        evening: "晚上好"
+      },
+      serviceIntro: "专属客服小虹为您服务"
+    },
     welcome: {
       greeting: "Hi",
       introduction: "我是你的专属AI助手小虹",
@@ -93,6 +101,14 @@ const enUS = {
   },
   chat: {
     title: "AI Assistant",
+    header: {
+      greeting: {
+        morning: "Good Morning",
+        afternoon: "Good Afternoon",
+        evening: "Good Evening"
+      },
+      serviceIntro: "AI Assistant Xiao Hong at your service"
+    },
     welcome: {
       greeting: "Hi",
       introduction: "I am your dedicated AI assistant Xiao Hong",

@@ -14,8 +14,12 @@ export function Home() {
   useEffect(() => {
     const savedLanguage = localStorage.getItem(LANGUAGE_KEY);
     if (savedLanguage) {
-      // 如果已经选择了语言，直接跳转到聊天页面
-      navigate('/chat');
+      // 如果已经选择了语言，直接跳转到聊天页面，保留 query 参数
+      // const currentSearchParams = new URLSearchParams(window.location.search);
+      navigate({
+        pathname: '/chat',
+        // search: currentSearchParams.toString()
+      }, { replace: true });
       return;
     }
     
@@ -44,8 +48,12 @@ export function Home() {
     setSelectedLanguage(language);
     i18n.changeLanguage(language);
     localStorage.setItem(LANGUAGE_KEY, language);
-    // Navigate to chat page after language selection
-    navigate('/chat');
+    // Navigate to chat page after language selection, preserving query params
+    // const currentSearchParams = new URLSearchParams(window.location.search);
+    navigate({
+      pathname: '/chat',
+      // search: currentSearchParams.toString()
+    }, { replace: true });
   };  // 不再需要 handleStart 函数
 
   // 等待i18n初始化完成
@@ -62,6 +70,7 @@ export function Home() {
   const base = import.meta.env.BASE_URL || "/";
   const avatarSrc = `${base.replace(/\/$/, "")}/xiaohong.gif`;
 
+  if(localStorage.getItem(LANGUAGE_KEY)) return null;
 
   return (
     <div className="min-h-dvh bg-gradient-to-br from-warm-brown-50 to-warm-brown-100 flex items-center justify-center p-4">

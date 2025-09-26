@@ -1,19 +1,37 @@
+import { useTranslation } from "react-i18next";
+import { useMemo, useState } from "react";
+import i18n from "@/i18n";
+
 export function ChatHeader() {
+    const { t } = useTranslation();
+    const [isOpen, setIsOpen] = useState(false);
     const base = import.meta.env.BASE_URL || "/";
     const avatarSrc = `${base.replace(/\/$/, "")}/xiaohong.gif`;
 
+    // 根据当前时间获取问候语
+    const greeting = useMemo(() => {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) {
+            return t("chat.header.greeting.morning");
+        } else if (hour >= 12 && hour < 18) {
+            return t("chat.header.greeting.afternoon");
+        } else {
+            return t("chat.header.greeting.evening");
+        }
+    }, [t]);
+
     return (
-        <div className="fixed pt-1.5 top-0 left-0 right-0 h-[78px] pl-[22px]" 
-        style={{
-             background: 'linear-gradient(#cbb486 0%, #ddd0b6 100%)' 
-            
-        }}  >
-            <div className="flex items-center">
+        <div className="fixed pt-1.5 top-0 left-0 right-0 h-[78px] pl-[22px] z-10"
+            style={{
+                background: 'linear-gradient(#cbb486 0%, #ddd0b6 100%)'
+
+            }}  >
+            <div className="flex items-center justify-between">
                 <div className="flex">
-                    <div className="mr-3">
+                    <div className="mr-3 shrink-0">
                         <img
                             src={avatarSrc}
-                            alt="小红"
+                            alt="小虹"
                             className="w-16 h-16 rounded-full object-cover"
                             onError={(e) => {
                                 const target = e.currentTarget;
@@ -30,17 +48,58 @@ export function ChatHeader() {
                         />
                     </div>
                     <div className="mt-[9px]">
-                        <div className="text-sm text-white mb-0.5 font-semibold">Hi, 下午好</div>
-                        <div className="text-xs text-white font-medium">专属客服小红为您服务</div>
+                        <div className="text-sm text-white mb-0.5 font-semibold">Hi, {greeting}</div>
+                        <div className="text-xs text-white font-medium">{t("chat.header.serviceIntro")}</div>
                     </div>
                 </div>
-                <div className="ml-auto">
-                    <button className="flex items-center px-2 py-0.5 leading-5 rounded-l-[6px] bg-[#bcaa86] text-white text-xs">
-                        <svg className="mr-0.5" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6.99992 3.19047C9.10392 3.19047 10.8094 4.89599 10.8094 6.99999H9.66659C9.66658 6.47647 9.51248 5.96453 9.22348 5.528C8.93449 5.09147 8.5234 4.74966 8.04147 4.54519C7.55953 4.34071 7.02806 4.28261 6.51333 4.37814C5.9986 4.47367 5.52337 4.7186 5.1469 5.08238C4.77042 5.44617 4.50935 5.91273 4.39624 6.42388C4.28313 6.93504 4.32298 7.46818 4.51082 7.95684C4.69866 8.44551 5.02618 8.86807 5.45255 9.17185C5.87893 9.47563 6.38528 9.64719 6.9085 9.66514L6.99992 9.66666C9.41592 9.66666 11.4571 11.2731 12.1123 13.4762H10.9047C10.2952 11.9154 8.77669 10.8095 6.99992 10.8095C5.22316 10.8095 3.70469 11.9154 3.09516 13.4762H1.88754C2.10797 12.7397 2.48458 12.0595 2.9917 11.4817C3.49883 10.904 4.12455 10.4424 4.82621 10.1284C4.32095 9.77802 3.90818 9.31037 3.62328 8.76551C3.33837 8.22066 3.18984 7.61484 3.1904 6.99999C3.1904 4.89599 4.89592 3.19047 6.99992 3.19047ZM6.99992 0.523804C9.81364 0.523804 12.1184 2.70285 12.3192 5.46514C12.6426 5.70286 12.8827 6.0367 13.0052 6.41899C13.1276 6.80129 13.1262 7.21249 13.001 7.59391C12.8758 7.97532 12.6334 8.30744 12.3082 8.54285C11.983 8.77826 11.5918 8.90492 11.1904 8.90476L8.71421 8.90514C8.59428 9.06505 8.42707 9.18317 8.23627 9.24277C8.04548 9.30237 7.84077 9.30043 7.65114 9.23722C7.46151 9.17401 7.29657 9.05273 7.17969 8.89058C7.06282 8.72842 6.99992 8.5336 6.99992 8.33371C6.99992 8.13382 7.06282 7.939 7.17969 7.77684C7.29657 7.61468 7.46151 7.49341 7.65114 7.4302C7.84077 7.36699 8.04548 7.36505 8.23627 7.42465C8.42707 7.48425 8.59428 7.60237 8.71421 7.76228L11.1904 7.7619C11.3925 7.7619 11.5863 7.68163 11.7291 7.53874C11.872 7.39586 11.9523 7.20206 11.9523 6.99999C11.9523 6.79792 11.872 6.60413 11.7291 6.46125C11.5863 6.31836 11.3925 6.23809 11.1904 6.23809V5.85714C11.1904 3.54285 9.31421 1.66666 6.99992 1.66666C4.68564 1.66666 2.80945 3.54285 2.80945 5.85714V6.23809C2.60738 6.23809 2.41358 6.31836 2.2707 6.46125C2.12782 6.60413 2.04754 6.79792 2.04754 6.99999C2.04754 7.20206 2.12782 7.39586 2.2707 7.53874C2.41358 7.68163 2.60738 7.7619 2.80945 7.7619V8.90476C2.40812 8.90481 2.01703 8.77811 1.69198 8.54272C1.36694 8.30733 1.12455 7.97528 0.999398 7.59397C0.87425 7.21265 0.87274 6.80155 0.995085 6.41933C1.11743 6.0371 1.35738 5.70329 1.68069 5.46552C1.88145 2.70285 4.18621 0.523804 6.99992 0.523804Z" fill="white" />
-                        </svg>
-                        人工客服
-                    </button>
+                <div className="mr-4 relative shrink-0">
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="flex items-center pl-2 pr-1.5 py-0.5 leading-5 rounded-[4px] bg-[#bcaa86] hover:bg-[#a38c6a] text-white text-xs transition-colors"
+                        >
+                            <svg className="mr-1" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" fill="currentColor" />
+                            </svg>
+                            {i18n.language === 'zh-CN' ? '中文' : 'English'}
+                            <svg className={`ml-1 w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        {isOpen && (
+                            <>
+                                <div
+                                    className="fixed inset-0"
+                                    onClick={() => setIsOpen(false)}
+                                />
+                                <div className="absolute right-0 mt-1 w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                                    <div className="py-1" role="menu" aria-orientation="vertical">
+                                        <button
+                                            className={`block w-full px-5 py-3 text-left text-xs ${i18n.language === 'zh-CN' ? 'bg-warm-brown-50 text-warm-brown-600' : 'text-gray-700 hover:bg-gray-100'}`}
+                                            onClick={() => {
+                                                i18n.changeLanguage('zh-CN');
+                                                localStorage.setItem('i18nextLng', 'zh-CN');
+                                                setIsOpen(false);
+                                            }}
+                                        >
+                                            中文
+                                        </button>
+                                        <button
+                                            className={`block w-full px-5 py-3 text-left text-xs ${i18n.language === 'en-US' ? 'bg-warm-brown-50 text-warm-brown-600' : 'text-gray-700 hover:bg-gray-100'}`}
+                                            onClick={() => {
+                                                i18n.changeLanguage('en-US');
+                                                localStorage.setItem('i18nextLng', 'en-US');
+                                                setIsOpen(false);
+                                            }}
+                                        >
+                                            English
+                                        </button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

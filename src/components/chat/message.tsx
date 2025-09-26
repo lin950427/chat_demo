@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
-import { FileTextIcon } from "@radix-ui/react-icons";
+// import { FileTextIcon } from "@radix-ui/react-icons";
 import type { Reference, ReferenceItem } from "@/lib/api/types";
-import { downloadDocument } from "@/lib/api/chat";
-import { LoadingDots } from "@/components/ui/loading-dots";
+// import { downloadDocument } from "@/lib/api/chat";
+// import { LoadingDots } from "@/components/ui/loading-dots";
 import { useTranslation } from "react-i18next";
 import { RecommendedQuestions } from "./recommended-questions";
 import Markdown from 'react-markdown'
@@ -13,39 +13,47 @@ import { memo, useMemo } from 'react'
 const CustomButton = ({ url, className, children }: { url: string; className?: string; children: React.ReactNode }) => {
 
 
-  const handleClick = () => {
-    if (!url) return;
-    window.location.href = url
-  }
+  // const handleClick = () => {
+  //   if (!url) return;
+  //   window.location.href = url
+  // }
 
   return (
-    <button
-      onClick={handleClick}
+    <a
+      // onClick={handleClick}
+      href={url}
+      rel="noreferrer"
       className={cn(
         "bg-[#c2a168] text-xs text-white px-1.5 py-1 font-semibold rounded-md hover:bg-warm-brown-600 transition-colors",
         className
       )}
     >
       {children}
-    </button>
+    </a>
   );
 };
 
-// 缓存正则表达式
-const buttonRegex = /<<BUTTON\|([^|]+)\|([^>]+)>>/;
+// 缓存正则表达式，添加 g 标志进行全局匹配
+const buttonRegex = /<<BUTTON\|([^|]+)\|([^>]+)>>/g;
 
 // 提取按钮数据的函数
 const extractButtons = (content: string) => {
   const buttons: { variant: 'primary' | 'secondary'; text: string; url: string }[] = [];
   let cleanContent = content;
 
-  // 提取所有按钮并收集它们
-  cleanContent = content.replace(buttonRegex, (_, url, text) => {
+  // 使用 matchAll 找出所有匹配项
+  const matches = Array.from(content.matchAll(buttonRegex));
+
+  // 收集所有按钮
+  matches.forEach(([, url, text]) => {
     buttons.push({ variant: 'primary', text, url });
-    return ''; // 从内容中移除按钮标记
   });
 
-  console.log('Extracted buttons:', cleanContent.trim());
+  // 移除所有按钮标记
+  cleanContent = content.replace(buttonRegex, '');
+
+  // 处理连续的换行符，将两个或更多连续的换行符替换为一个
+  cleanContent = cleanContent.replace(/\n{2,}/g, '\n');
 
   return { buttons, cleanContent: cleanContent.trim() };
 };
@@ -59,8 +67,6 @@ const MessageContent = memo(({ content }: { content: string }) => {
     <Markdown
       remarkPlugins={[remarkGfm]}
       components={{
-        p: ({ ...props }) => <p style={{ margin: 0 }} {...props} />,
-        br: ({ ...props }) => <br style={{ display: 'none' }} {...props} />,
         a: ({ href, children }) => (
           <a
             href={href}
@@ -69,7 +75,17 @@ const MessageContent = memo(({ content }: { content: string }) => {
           >
             {children}
           </a>
-        )
+        ),
+        li: ({ ...props }) => (
+          <li className="my-0 py-0" {...props} />
+        ),
+        ul: ({ ...props }) => (
+          <ul className="my-2 py-0" {...props} />
+        ),
+        ol: ({ ...props }) => (
+          <ol className="my-2 py-0" {...props} />
+        ),
+        p: ({ ...props }) => (<p className="my-0 py-0" {...props} />)
       }}
     >
       {content}
@@ -214,7 +230,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
               )}>
               {/* 消息内容 */}
               <div className="px-3 py-2.5">
-                <div className="w-full text-sm leading-5 whitespace-pre-wrap break-words text-slate-900">
+                <div className="w-full text-sm break-words leading-[1.5] text-slate-900">
 
                   {isLoading ? (
                     <span className="inline-flex items-center text-nowrap">正在输入<img src={loadingGifSrc} className="w-5 mr-3" /></span>
@@ -286,7 +302,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
           <div className="flex-1">
             <div className="max-w-[88%]">
               <div className="bg-white px-3 py-2.5 text-sm rounded-md mb-6">
-                <h4 className="mb-2">{t("chat.possibleApplications")}</h4>
+                {/* <h4 className="mb-2">{t("chat.possibleApplications")}</h4> */}
                 {buttons.map((button, index) => (
                   <div key={index} className={`flex justify-between px-3 py-2.5 bg-[#f7f4ef] rounded-md items-center ${index !== buttons.length - 1 ? "mb-2" : ""}`}>
                     <span className="font-semibold">

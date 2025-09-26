@@ -70,11 +70,11 @@ export function FakeLink() {
           alt="人才服务说明"
           className="w-full -mt-[24.98vw]"
         />
-        <div className="absolute w-screen h-[20vw] bottom-0 left-0 bg-[#fdf9ed]" />
+        <div className="absolute w-screen h-[20vw] bottom-0 left-0 bg-transparent" onClick={() => setIsModalOpen(true)} />
       </div>
 
       {/* 底部按钮 */}
-      <div className="fixed bottom-0 left-0 right-0 py-4 px-6 bg-[#fdf9ed]">
+      {/* <div className="fixed bottom-0 left-0 right-0 py-4 px-6 bg-[#fdf9ed]">
         <button
           onClick={() => setIsModalOpen(true)}
           className="w-full py-3 text-white rounded-lg"
@@ -84,7 +84,7 @@ export function FakeLink() {
         >
           办理事项
         </button>
-      </div>
+      </div> */}
     </div>
 
     {/* 弹窗 */}
