@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { LANGUAGE_KEY } from "@/constant";
+import { LANGUAGE_KEY, SUPPORT_LANGUAGES } from "@/constant";
+import { LanguageDrawer } from "@/components/ui/language-drawer";
 
-export function Home() {
-  const { t, i18n } = useTranslation();
+const Home = () => {
+  const { i18n, t } = useTranslation();
   const navigate = useNavigate();
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("");
   const [isReady, setIsReady] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   // 初始化时检查保存的语言设置
   useEffect(() => {
@@ -22,150 +22,132 @@ export function Home() {
       }, { replace: true });
       return;
     }
-    
+
     // 未选择语言时默认展示中文
-    setSelectedLanguage("zh-CN");
-    i18n.changeLanguage("zh-CN");
+    // setSelectedLanguage("zh-CN");
+    // i18n.changeLanguage("zh-CN");
     setIsReady(true);
-  }, [i18n, navigate]);
+  }, []);
 
-  const languages = [
-    {
-      code: "zh-CN",
-      name: t("home.chinese"),
-      nativeName: "中文",
-      flag: "🇨🇳",
-    },
-    {
-      code: "en-US",
-      name: t("home.english"),
-      nativeName: "English",
-      flag: "🇺🇸",
-    },
-  ];
-
-  const handleSelect = (language: string) => {
-    setSelectedLanguage(language);
-    i18n.changeLanguage(language);
-    localStorage.setItem(LANGUAGE_KEY, language);
-    // Navigate to chat page after language selection, preserving query params
-    // const currentSearchParams = new URLSearchParams(window.location.search);
-    navigate({
-      pathname: '/chat',
-      // search: currentSearchParams.toString()
-    }, { replace: true });
-  };  // 不再需要 handleStart 函数
+  const jumpToChat = () => {
+    localStorage.setItem(LANGUAGE_KEY, i18n.language || 'zh-CN');
+    navigate('/chat');
+  }
 
   // 等待i18n初始化完成
-  if (!isReady) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-warm-brown-50 to-warm-brown-100 flex items-center justify-center">
-        <div className="w-20 h-20 bg-gradient-to-br from-warm-brown-600 to-warm-brown-700 rounded-full flex items-center justify-center animate-pulse">
-          <span className="text-3xl text-white">🤖</span>
-        </div>
-      </div>
-    );
-  }
+  if (!isReady) return null;
 
   const base = import.meta.env.BASE_URL || "/";
   const avatarSrc = `${base.replace(/\/$/, "")}/xiaohong.gif`;
 
-  if(localStorage.getItem(LANGUAGE_KEY)) return null;
+  if (localStorage.getItem(LANGUAGE_KEY)) return null;
 
   return (
-    <div className="min-h-dvh bg-gradient-to-br from-warm-brown-50 to-warm-brown-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl p-8 shadow-lg border border-warm-brown-200">
-          {/* Logo/Icon */}
-          <div className="text-center mb-8">
-            <div className="w-28 h-28 mx-auto mb-4 overflow-hidden flex items-center justify-center">
-              <img
-                src={avatarSrc}
-                alt="avatar"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  target.style.display = 'none';
-                  const parent = target.parentElement;
-                  if (parent && parent.querySelector('[data-fallback]') == null) {
-                    const span = document.createElement('span');
-                    span.dataset.fallback = 'true';
-                    span.textContent = '🤖';
-                    span.className = 'text-3xl text-white';
-                    parent.appendChild(span);
-                  }
-                }}
-              />
+    <div
+      className="min-h-screen flex flex-col px-10 bg-[#cbb486]"
+      // style={{
+      //   background: 'linear-gradient(to bottom, #cbb486 0%, #ddd0b6 100%)'
+      // }}
+    >
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col items-center pt-12">
+        {/* Avatar */}
+        <div className="mb-8 w-36 h-36">
+          <img
+            src={avatarSrc}
+            alt="avatar"
+            className="w-full h-full object-contain"
+            onError={(e) => {
+              const target = e.currentTarget;
+              target.style.display = 'none';
+              const parent = target.parentElement;
+              if (parent && parent.querySelector('[data-fallback]') == null) {
+                const span = document.createElement('span');
+                span.dataset.fallback = 'true';
+                span.textContent = '🤖';
+                span.className = 'text-5xl';
+                parent.appendChild(span);
+              }
+            }}
+          />
+        </div>
+
+        {/* Welcome Text */}
+        <div className="text-center mb-6">
+          <h1 className="text-white text-xl font-medium">
+            您好，我是你的专属AI助手小虹
+          </h1>
+          <p className="text-[#7F5B14] text-sm font-semibold">
+            Hello, I am your dedicated AI assistant Xiao Hong.
+          </p>
+        </div>
+
+        {/* Language Selection Section */}
+        <div className="w-full max-w-sm">
+          <div className="text-center text-white mb-6 font-semibold">
+            <div className="text-lg font-medium">
+              请设置你的默认语言
             </div>
-            <h1 className="text-2xl font-bold text-warm-brown-800 mb-2">
-              {t("home.title")}
-            </h1>
-            <p className="text-sm text-warm-brown-600">{t("home.subtitle")}</p>
+            <div className="text-[#7F5B14] text-sm">
+              Please set your default language.
+            </div>
           </div>
 
-          {/* Language Selection */}
-          <div className="space-y-3 mb-8">
-            {languages.map((language) => (
-              <button
-                key={language.code}
-                onClick={() => handleSelect(language.code)}
-                className={cn(
-                  "w-full p-4 rounded-xl border-2 transition-all duration-200 flex items-center",
-                  selectedLanguage === language.code
-                    ? "border-warm-brown-600 bg-warm-brown-50 shadow-md"
-                    : "border-warm-brown-200 hover:border-warm-brown-400 hover:bg-warm-brown-25"
-                )}>
-                <span className="text-2xl">{language.flag}</span>
-                <span className="inline-block w-4" />
-                <div className="flex-1 text-left">
-                  <div className="font-medium text-warm-brown-800">
-                    {language.nativeName}
-                  </div>
-                  <div className="text-sm text-warm-brown-600">
-                    {language.name}
-                  </div>
+          {/* Language Selector Button */}
+          <div className="mb-16">
+            <button
+              onClick={() => setIsOpen(true)}
+              className="w-full bg-white bg-opacity-60 backdrop-blur-sm rounded-lg py-2 px-4 text-[#7F5B14] flex justify-between items-center border border-white/20"
+            >
+              <span />
+              <div className="text-center">
+                <div className="font-medium">
+                  {SUPPORT_LANGUAGES.find(lang => lang.code === i18n.language)?.nativeName || '简体中文'}
                 </div>
-                {selectedLanguage === language.code && (
-                  <div className="w-6 h-6 rounded-full bg-warm-brown-600 flex items-center justify-center">
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-white">
-                      <polyline points="20,6 9,17 4,12" />
-                    </svg>
-                  </div>
-                )}
-              </button>
-            ))}
+                <div className="text-[10px] font-semibold">
+                  {SUPPORT_LANGUAGES.find(lang => lang.code === i18n?.language)?.name || 'Simplified Chinese'}
+                </div>
+              </div>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </div>
 
           {/* Start Button */}
           <button
-            onClick={() => selectedLanguage && handleSelect(selectedLanguage)}
-            disabled={!selectedLanguage}
-            className={cn(
-              "w-full py-3 px-4 rounded-xl font-medium transition-all duration-200",
-              selectedLanguage
-                ? "bg-warm-brown-600 hover:bg-warm-brown-700 text-white shadow-md hover:shadow-lg"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed"
-            )}>
-            {t("home.start")}
-          </button>
+            onClick={jumpToChat}
+            className="fixed bottom-16 w-[calc(100vw-80px)] bg-[#C2A168] backdrop-blur-sm text-white p-4 rounded-lg flex items-center justify-between border border-white/20 transition-colors"
+          >
+            <span className="font-medium">{t("home.enterNow")}</span>
+            <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g clip-path="url(#clip0_32_681)">
+                <path d="M0.625 8L19.2917 8" stroke="white" stroke-width="1.86667" />
+                <path d="M12.875 1L19.875 8L12.875 15" stroke="white" stroke-width="1.86667" />
+              </g>
+              <defs>
+                <clipPath id="clip0_32_681">
+                  <rect width="22" height="16" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
 
-          {/* Footer */}
-          {/* <div className="text-center mt-6">
-            <p className="text-xs text-warm-brown-500">
-              AI Assistant for Talent Services
-            </p>
-          </div> */}
+          </button>
         </div>
       </div>
+
+      {/* Language Drawer */}
+      <LanguageDrawer
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
     </div>
   );
 }
+
+export default memo(Home);

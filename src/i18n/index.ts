@@ -19,6 +19,7 @@ const zhCN = {
     chinese: "中文",
     english: "English",
     start: "开始聊天",
+    enterNow: "立即进入",
   },
   chat: {
     title: "AI助手",
@@ -98,6 +99,7 @@ const enUS = {
     chinese: "中文",
     english: "English",
     start: "Start Chat",
+    enterNow: "Enter Now",
   },
   chat: {
     title: "AI Assistant",

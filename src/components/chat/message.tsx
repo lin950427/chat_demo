@@ -233,7 +233,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
                 <div className="w-full text-sm break-words leading-[1.5] text-slate-900">
 
                   {isLoading ? (
-                    <span className="inline-flex items-center text-nowrap">正在输入<img src={loadingGifSrc} className="w-5 mr-3" /></span>
+                    <span className="inline-flex items-center text-nowrap">正在输入<img src={loadingGifSrc} className="w-5 mr-3 ml-0.5 -mb-1" /></span>
                   ) : (
                     <MessageContent content={cleanContent} />
                   )}

@@ -1,6 +1,6 @@
 // import { useEffect } from "react";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Home } from "./pages/home";
+import Home from "./pages/home";
 import ChatPage from "./pages/chat";
 import { FakeLink } from "./pages/fake-link";
 import { useAuth } from "./hooks/useAuth";

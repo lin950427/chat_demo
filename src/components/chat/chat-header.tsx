@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
 import i18n from "@/i18n";
+import { LanguageDrawer } from "../ui/language-drawer";
 
 export function ChatHeader() {
     const { t } = useTranslation();
@@ -66,39 +67,7 @@ export function ChatHeader() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-
-                        {isOpen && (
-                            <>
-                                <div
-                                    className="fixed inset-0"
-                                    onClick={() => setIsOpen(false)}
-                                />
-                                <div className="absolute right-0 mt-1 w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                                    <div className="py-1" role="menu" aria-orientation="vertical">
-                                        <button
-                                            className={`block w-full px-5 py-3 text-left text-xs ${i18n.language === 'zh-CN' ? 'bg-warm-brown-50 text-warm-brown-600' : 'text-gray-700 hover:bg-gray-100'}`}
-                                            onClick={() => {
-                                                i18n.changeLanguage('zh-CN');
-                                                localStorage.setItem('i18nextLng', 'zh-CN');
-                                                setIsOpen(false);
-                                            }}
-                                        >
-                                            中文
-                                        </button>
-                                        <button
-                                            className={`block w-full px-5 py-3 text-left text-xs ${i18n.language === 'en-US' ? 'bg-warm-brown-50 text-warm-brown-600' : 'text-gray-700 hover:bg-gray-100'}`}
-                                            onClick={() => {
-                                                i18n.changeLanguage('en-US');
-                                                localStorage.setItem('i18nextLng', 'en-US');
-                                                setIsOpen(false);
-                                            }}
-                                        >
-                                            English
-                                        </button>
-                                    </div>
-                                </div>
-                            </>
-                        )}
+                        <LanguageDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
                     </div>
                 </div>
             </div>

@@ -13,9 +13,29 @@ export default {
           '50%': { transform: 'translateY(-2px)', opacity: '0.8' },
           '100%': { transform: 'translateY(0)', opacity: '0.2' },
         },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        'fade-out': {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
+        },
+        'slide-in-from-bottom': {
+          '0%': { transform: 'translateY(100%)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+        'slide-out-to-bottom': {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(100%)' },
+        },
       },
       animation: {
         'loading-dots': 'loading-dots 0.8s ease-in-out infinite',
+        'fade-in': 'fade-in 0.3s ease-out',
+        'fade-out': 'fade-out 0.3s ease-out',
+        'slide-in-from-bottom': 'slide-in-from-bottom 0.3s ease-out',
+        'slide-out-to-bottom': 'slide-out-to-bottom 0.3s ease-out',
       },
       colors: {
         border: "#CBB486",
@@ -118,6 +138,28 @@ export default {
         },
       };
       addUtilities(scrollbarHideUtilities);
+    },
+    function({ addUtilities }) {
+      // Radix UI 动画数据属性支持
+      const radixAnimations = {
+        '[data-state="open"]': {
+          '&.animate-in': {
+            animation: 'fade-in 0.3s ease-out',
+          },
+          '&.slide-in-from-bottom': {
+            animation: 'slide-in-from-bottom 0.3s ease-out',
+          },
+        },
+        '[data-state="closed"]': {
+          '&.animate-out': {
+            animation: 'fade-out 0.3s ease-out',
+          },
+          '&.slide-out-to-bottom': {
+            animation: 'slide-out-to-bottom 0.3s ease-out',
+          },
+        },
+      };
+      addUtilities(radixAnimations);
     },
   ],
 }
