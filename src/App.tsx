@@ -7,8 +7,11 @@ import { useAuth } from "./hooks/useAuth";
 import "./i18n";
 import { SWRConfig } from "swr";
 import { swrConfig } from "./lib/swr-config";
+import { FakeLinkB } from "./pages/fake-link-b";
+import { FakeLinkC } from "./pages/fake-link-c";
+import { FakeLinkD } from "./pages/fake-link-d";
+import { FakeLinkA } from "./pages/fake-link-a";
 // import { useEffect } from "react";
-// import { initVConsole } from "./lib/debug";
 // import { initVConsole } from "./lib/debug";
 
 
@@ -39,6 +42,10 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/fake-link" element={<FakeLink />} />
+            <Route path="/fake-link-a" element={<FakeLinkA />} />
+            <Route path="/fake-link-b" element={<FakeLinkB />} />
+            <Route path="/fake-link-c" element={<FakeLinkC />} />
+            <Route path="/fake-link-d" element={<FakeLinkD />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>

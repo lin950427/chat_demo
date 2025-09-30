@@ -48,6 +48,8 @@ const zhCN = {
     possibleApplications: "你可能要申请事项",
     applyNow: "前往申请",
     thinking: "正在思考中...",
+    typing: "正在输入",
+    relatedDocuments: "提及的相关文档",
   },
   questions: {
     group1: [
@@ -129,6 +131,8 @@ const enUS = {
     possibleApplications: "Possible Applications",
     applyNow: "Apply Now",
     thinking: "Thinking...",
+    typing: "Typing",
+    relatedDocuments: "Related Documents",
   },
   questions: {
     group1: [
