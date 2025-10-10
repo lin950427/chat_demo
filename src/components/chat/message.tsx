@@ -7,6 +7,8 @@ import { RecommendedQuestions } from "./recommended-questions";
 // import remarkGfm from 'remark-gfm'
 import { memo, useMemo } from 'react'
 import { CDN_PREFIX } from "@/constant";
+import Markdown from 'markdown-to-jsx'
+
 
 // 按钮组件
 const CustomButton = ({ url, className, children }: { url: string; className?: string; children: React.ReactNode }) => {
@@ -52,43 +54,50 @@ const extractButtons = (content: string) => {
 
 
 
-  return { buttons, cleanContent: cleanContent.trim() };
+  return { buttons, cleanContent: cleanContent };
 };
 
 // 消息内容组件
 const MessageContent = memo(({ content }: { content: string }) => {
-  // 使用 useMemo 缓存处理后的内容和按钮
-
-  return content
-
-  // return (
-  //   <Markdown
-  //     remarkPlugins={[remarkGfm]}
-  //     components={{
-  //       a: ({ href, children }) => (
-  //         <a
-  //           href={href}
-  //           rel="noopener noreferrer"
-  //           className="text-warm-brown-600 break-all hover:text-warm-brown-800 underline"
-  //         >
-  //           {children}
-  //         </a>
-  //       ),
-  //       li: ({ ...props }) => (
-  //         <li className="my-0 py-0" {...props} />
-  //       ),
-  //       ul: ({ ...props }) => (
-  //         <ul className="my-2 py-0" {...props} />
-  //       ),
-  //       ol: ({ ...props }) => (
-  //         <ol className="my-2 py-0" {...props} />
-  //       ),
-  //       p: ({ ...props }) => (<p className="my-0 py-0" {...props} />)
-  //     }}
-  //   >
-  //     {content}
-  //   </Markdown>
-  // );
+  // return content
+  return (
+    <Markdown
+      options={{
+        overrides: {
+          strong: (values) => {
+            return <strong className="my-1 inline-block">{values.children}</strong>
+          },
+          hr: (values) => values.children || null
+        }
+      }}
+    // options={{ forceInline: true }}
+    // className="whitespace-pre-line"
+    // remarkPlugins={[remarkGfm]}
+    // components={{
+    //   a: ({ href, children }) => (
+    //     <a
+    //       href={href}
+    //       rel="noopener noreferrer"
+    //       className="text-warm-brown-600 break-all hover:text-warm-brown-800 underline"
+    //     >
+    //       {children}
+    //     </a>
+    //   ),
+    //   li: ({ ...props }) => (
+    //     <li className="my-0 py-0" {...props} />
+    //   ),
+    //   ul: ({ ...props }) => (
+    //     <ul className="my-2 py-0" {...props} />
+    //   ),
+    //   ol: ({ ...props }) => (
+    //     <ol className="my-2 py-0" {...props} />
+    //   ),
+    //   p: ({ ...props }) => (<p className="my-0 py-0" {...props} />)
+    // }}
+    >
+      {content}
+    </Markdown>
+  );
 });
 
 interface MessageProps {
