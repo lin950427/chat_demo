@@ -29,11 +29,11 @@ export function ChatHeader() {
             }}  >
             <div className="flex items-center justify-between">
                 <div className="flex">
-                    <div className="mr-3 shrink-0">
+                    <div className="mr-3 w-16 h-16 shrink-0 overflow-hidden">
                         <img
                             src={avatarSrc}
                             alt="小虹"
-                            className="w-16 h-16 rounded-full object-cover"
+                            className="w-16 h-16 rounded-full object-cover -mt-0.5"
                             onError={(e) => {
                                 const target = e.currentTarget;
                                 target.style.display = 'none';

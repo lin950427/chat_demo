@@ -16,7 +16,7 @@ export default function ChatPage({ userId }: ChatPageProps) {
     <Layout bannerHeight={0} className="bg-warm-brown-50">
       <ChatHeader />
       <div
-        className="mt-[78px] h-[calc(100dvh-58px-101px-env(safe-area-inset-bottom,32px))] fixed"
+        className="mt-[78px] h-[calc(100vh-58px-101px-env(safe-area-inset-bottom,32px))] fixed"
         style={{
           background: 'linear-gradient(180deg, #ddd0b6 0%, #f2f1ed 10%, #f2f1ed 100%)',
         }}>

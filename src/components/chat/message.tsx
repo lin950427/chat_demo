@@ -156,7 +156,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
       <div className={cn("flex w-full justify-end mb-6", className)}>
         <div
           className={cn(
-            "flex flex-col rounded-md px-3 py-2.5 max-w-[88%] bg-[#E7DFCF]"
+            "flex flex-col rounded-md px-3 py-2.5 max-w-[calc(100vw-56px-50px)] bg-[#E7DFCF]"
           )}>
           <div className="text-sm whitespace-pre-wrap break-words">
             {message.content}
@@ -233,7 +233,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
           <div className="flex-1">
             <div
               className={cn(
-                "flex flex-col rounded-md overflow-hidden max-w-[88%] bg-white transition-opacity duration-200",
+                "flex flex-col rounded-md overflow-hidden max-w-[calc(100vw-56px-50px)] bg-white transition-opacity duration-200",
               )}>
               {/* 消息内容 */}
               <div className="px-3 py-2.5">
@@ -255,7 +255,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
         <div className="flex -mt-3">
           <div className="w-[42px]" />
           <div className="flex-1">
-            <div className="max-w-[88%]">
+            <div className="max-w-[calc(100vw-56px-50px)]">
               <div className="bg-white px-3 pt-2.5 pb-0.5 text-sm rounded-md mb-6">
                 <h4 className="mb-2">{t("chat.relatedDocuments")}</h4>
                 <div className="flex flex-col">
@@ -314,7 +314,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
         <div className="flex -mt-3">
           <div className="w-[42px]" />
           <div className="flex-1">
-            <div className="max-w-[88%]">
+            <div className="max-w-[calc(100vw-56px-50px)]">
               <div className="bg-white px-3 py-2.5 text-sm rounded-md mb-6">
                 {/* <h4 className="mb-2">{t("chat.possibleApplications")}</h4> */}
                 {buttons.map((button, index) => (
@@ -337,7 +337,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
         <div className="flex -mt-3">
           <div className="w-[42px]" />
           <div className="flex-1">
-            <div className="max-w-[88%]">
+            <div className="max-w-[calc(100vw-56px-50px)]">
               <RecommendedQuestions onQuestionClick={onQuestionClick} />
             </div>
           </div>

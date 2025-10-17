@@ -39,14 +39,15 @@ function App() {
       <HashRouter>
         <div className="h-screen w-full overflow-hidden">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/fake-link" element={<FakeLink />} />
             <Route path="/fake-link-a" element={<FakeLinkA />} />
             <Route path="/fake-link-b" element={<FakeLinkB />} />
             <Route path="/fake-link-c" element={<FakeLinkC />} />
             <Route path="/fake-link-d" element={<FakeLinkD />} />
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="/" element={<Navigate to="/fake-link-a" />} />
+            <Route path="*" element={<Navigate to="/fake-link-a" />} />
           </Routes>
         </div>
       </HashRouter>
