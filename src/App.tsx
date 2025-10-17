@@ -11,16 +11,16 @@ import { FakeLinkB } from "./pages/fake-link-b";
 import { FakeLinkC } from "./pages/fake-link-c";
 import { FakeLinkD } from "./pages/fake-link-d";
 import { FakeLinkA } from "./pages/fake-link-a";
-// import { useEffect } from "react";
-// import { initVConsole } from "./lib/debug";
+import { useEffect } from "react";
+import { initVConsole } from "./lib/debug";
 
 
 function App() {
-  // useEffect(() => {
-  //   // 初始化调试工具
-  //   initVConsole();
-  //   console.log("当前路由", window.location.href);
-  // }, []);
+  useEffect(() => {
+    // 初始化调试工具
+    initVConsole();
+    console.log("当前路由", window.location.href);
+  }, []);
 
   const { isAuthenticated, isLoading } = useAuth();
 

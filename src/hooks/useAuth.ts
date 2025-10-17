@@ -158,6 +158,8 @@ export function useAuth(): UseAuthReturn {
 
     const { platform, accessToken: urlAccessToken } = getUrlParams()
 
+    console.log('Detected platform:', platform, 'URL access token:', urlAccessToken, 'fullURL:', window.location.href);
+
     if (!platform) {
       // 没有平台参数，直接进入系统（开发环境或直接访问）
       setAuthState({

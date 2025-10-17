@@ -3,7 +3,6 @@ import type { Reference, ReferenceItem } from "@/lib/api/types";
 import { LoadingDots } from "@/components/ui/loading-dots";
 import { useTranslation } from "react-i18next";
 import { RecommendedQuestions } from "./recommended-questions";
-// import Markdown from 'react-markdown'
 // import remarkGfm from 'remark-gfm'
 import { memo, useMemo } from 'react'
 import { CDN_PREFIX } from "@/constant";
@@ -50,8 +49,12 @@ const extractButtons = (content: string) => {
   cleanContent = cleanContent.replace(/##\d+\$\$/g, '');
 
   // 处理连续的换行符，将两个或更多连续的换行符替换为一个
-  // cleanContent = cleanContent.replace(/\n{2,}/g, '\n');
+  // cleanContent = cleanContent.replace(/\n/g, '\n');
 
+  // 处理列表数字的转义
+  cleanContent = cleanContent.replace(/(^|\n)(\d+)\.\s/g, '$1$2\\. ');
+
+  console.log('cleanContent:', cleanContent);
 
 
   return { buttons, cleanContent: cleanContent };
@@ -60,40 +63,18 @@ const extractButtons = (content: string) => {
 // 消息内容组件
 const MessageContent = memo(({ content }: { content: string }) => {
   // return content
+
   return (
     <Markdown
+      className='markdown-body'
       options={{
         overrides: {
           strong: (values) => {
             return <strong className="my-1 inline-block">{values.children}</strong>
           },
-          hr: (values) => values.children || null
+          hr: (values) => values.children || null,
         }
       }}
-    // options={{ forceInline: true }}
-    // className="whitespace-pre-line"
-    // remarkPlugins={[remarkGfm]}
-    // components={{
-    //   a: ({ href, children }) => (
-    //     <a
-    //       href={href}
-    //       rel="noopener noreferrer"
-    //       className="text-warm-brown-600 break-all hover:text-warm-brown-800 underline"
-    //     >
-    //       {children}
-    //     </a>
-    //   ),
-    //   li: ({ ...props }) => (
-    //     <li className="my-0 py-0" {...props} />
-    //   ),
-    //   ul: ({ ...props }) => (
-    //     <ul className="my-2 py-0" {...props} />
-    //   ),
-    //   ol: ({ ...props }) => (
-    //     <ol className="my-2 py-0" {...props} />
-    //   ),
-    //   p: ({ ...props }) => (<p className="my-0 py-0" {...props} />)
-    // }}
     >
       {content}
     </Markdown>
