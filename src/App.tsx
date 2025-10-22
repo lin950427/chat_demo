@@ -22,7 +22,7 @@ function App() {
     console.log("当前路由", window.location.href);
   }, []);
 
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, userId } = useAuth();
 
 
 
@@ -40,7 +40,7 @@ function App() {
         <div className="h-screen w-full overflow-hidden">
           <Routes>
             <Route path="/home" element={<Home />} />
-            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/chat" element={<ChatPage userId={userId} />} />
             <Route path="/fake-link" element={<FakeLink />} />
             <Route path="/fake-link-a" element={<FakeLinkA />} />
             <Route path="/fake-link-b" element={<FakeLinkB />} />

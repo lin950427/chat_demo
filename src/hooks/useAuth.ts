@@ -46,7 +46,7 @@ export function useAuth(): UseAuthReturn {
       const redirectUrl = await getFullRedirectUrl(currentUrl)
       if (redirectUrl) {
         console.log("Redirecting to:", redirectUrl);
-        window.location.href = redirectUrl
+        location.replace(redirectUrl)
       }
     } catch (error) {
       console.error('Failed to get redirect URL:', error)
@@ -60,67 +60,61 @@ export function useAuth(): UseAuthReturn {
     }
   }, [])
 
-  // 随申办授权流程
-  const handleEshiminAuth = useCallback(async () => {
-    const { code } = getUrlParams()
-
-    if (code) {
-      console.log('获取到 code:', code, '直接使用 code 换取用户信息');
-      // 有 code 参数，使用 code 获取用户信息
-      try {
-        const userInfo = await getUserInfoByCode(code)
-        setAccessToken(userInfo.access_token)
-        setUserId(userInfo.userId)
-        setAuthState({
-          isAuthenticated: true,
-          isLoading: false,
-          userId: userInfo.userId,
-          platform: 'eshimin'
-        })
-
-        console.log('随申办认证获取到用户信息:', userInfo)
-
-        // 清除 URL 中的 code 参数
-        const url = new URL(window.location.href)
-        window.history.replaceState({}, '', url.toString())
-      } catch (error) {
-        console.error('Failed to get user info by code:', error)
-        setAuthState({
-          isAuthenticated: true,
-          isLoading: false,
-          platform: 'eshimin',
-          error: '授权失败，请重试'
-        })
-      }
-    } else if (accessToken) {
-      // 有存储的 access_token，尝试获取用户信息
-      try {
-        console.log('使用存储的 access token 获取用户信息:', accessToken);
-        const userInfo = await getUserInfo({
-          accessToken,
-          source: 'app'
-        })
-        console.log('使用存储的 access token 获取到用户信息:', userInfo)
-        setUserId(userInfo.userId)
-        setAuthState({
-          isAuthenticated: true,
-          isLoading: false,
-          userId: userInfo.userId,
-          platform: 'eshimin'
-        })
-      } catch (error) {
-        console.log('使用存储的 access token 获取用户信息失败:', error)
-        console.error('Access token expired:', error)
-        // token 过期，清除存储并重新授权
-        setAccessToken(undefined)
-        setUserId(undefined)
-        await startEshiminAuth()
-      }
-    } else {
-      // 没有 token，开始授权流程
+  const verifyByAccessToken = useCallback(async (accessToken: string) => {
+    try {
+      console.log('使用存储的 access token 获取用户信息:', accessToken);
+      const userInfo = await getUserInfo({
+        accessToken,
+        source: 'app'
+      })
+      console.log('使用存储的 access token 获取到用户信息:', userInfo)
+      setUserId(userInfo.userId)
+      setAuthState({
+        isAuthenticated: true,
+        isLoading: false,
+        userId: userInfo.userId,
+        platform: 'eshimin'
+      })
+    } catch (error) {
+      console.log('使用存储的 access token 获取用户信息失败:', error)
+      console.error('Access token expired:', error)
+      // token 过期，清除存储并重新授权
+      setAccessToken(undefined)
+      setUserId(undefined)
       await startEshiminAuth()
     }
-  }, [accessToken, setAccessToken, setUserId, startEshiminAuth])
+  }, [setAccessToken, startEshiminAuth]);
+
+  const verifyByCode = useCallback(async (code: string) => {
+    console.log('获取到 code:', code, '直接使用 code 换取用户信息');
+    // 有 code 参数，使用 code 获取用户信息
+    try {
+      const userInfo = await getUserInfoByCode(code)
+      setAccessToken(userInfo.access_token)
+      setUserId(userInfo.userId)
+      setAuthState({
+        isAuthenticated: true,
+        isLoading: false,
+        userId: userInfo.userId,
+        platform: 'eshimin'
+      })
+
+      console.log('随申办认证获取到用户信息:', userInfo)
+
+      // 清除 URL 中的 code 参数
+      const url = new URL(window.location.href)
+      window.history.replaceState({}, '', url.toString())
+    } catch (error) {
+      console.error('Failed to get user info by code:', error)
+      setAuthState({
+        isAuthenticated: true,
+        isLoading: false,
+        platform: 'eshimin',
+        error: '授权失败，请重试'
+      })
+    }
+  }, [setAccessToken]);
+
 
   // 微信/支付宝环境处理
   const handleThirdPartyAuth = useCallback(async (platform: Platform, accessToken: string) => {
@@ -156,26 +150,27 @@ export function useAuth(): UseAuthReturn {
     console.log('开始认证流程');
     setAuthState(prev => ({ ...prev, isLoading: true, error: undefined }))
 
-    const { platform, accessToken: urlAccessToken } = getUrlParams()
+    const { platform, accessToken: urlAccessToken, code } = getUrlParams()
 
     console.log('Detected platform:', platform, 'URL access token:', urlAccessToken, 'fullURL:', window.location.href);
 
-    if (!platform) {
+    if (code) {
+      await verifyByCode(code)
+    } else if (accessToken) {
+      // 有存储的 access_token，尝试获取用户信息
+      await verifyByAccessToken(accessToken)
+    } else if (!platform) {
       // 没有平台参数，直接进入系统（开发环境或直接访问）
       setAuthState({
         isAuthenticated: true,
         isLoading: false
       })
-      return
-    }
-
-    if (platform === 'eshimin') {
-      console.log('进入随申办认证流程');
-
-      await handleEshiminAuth()
     } else if (urlAccessToken && ['weixinmini', 'weixinmp', 'alipaymini', 'alipayfuwu'].includes(platform)) {
       console.log('进入第三方平台认证流程');
       await handleThirdPartyAuth(platform, urlAccessToken)
+    } else if (platform === 'eshimin') {
+      console.log('进入随申办认证流程');
+      await startEshiminAuth()
     } else {
       setAuthState({
         isAuthenticated: true,
@@ -184,7 +179,7 @@ export function useAuth(): UseAuthReturn {
         error: '缺少必要的认证参数'
       })
     }
-  }, [handleEshiminAuth, handleThirdPartyAuth])
+  }, [accessToken, handleThirdPartyAuth, startEshiminAuth, verifyByAccessToken, verifyByCode])
 
 
   // 初始化时执行认证

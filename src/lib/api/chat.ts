@@ -22,7 +22,7 @@ const createApiInstance = (): AxiosInstance => {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${RAGFLOW_API_KEY}`
     },
-    timeout: 600000, // 设置60秒超时时间
+    timeout: 60000, // 设置60秒超时时间
   })
 }
 
