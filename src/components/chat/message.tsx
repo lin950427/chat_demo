@@ -105,9 +105,10 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
     if (message.references?.chunks) {
       // 处理实时对话的引用格式
       const documents = new Map();
+      // document_id相同文件也不一样 所以暂时用 document_name 作为 key
       message.references.chunks.forEach((chunk) => {
-        if (!documents.has(chunk.document_id)) {
-          documents.set(chunk.document_id, {
+        if (!documents.has(`${chunk.dataset_id}-${chunk.document_name}`)) {
+          documents.set(`${chunk.dataset_id}-${chunk.document_name}`, {
             document_id: chunk.document_id,
             document_name: chunk.document_name,
             dataset_id: chunk.dataset_id,
@@ -119,8 +120,8 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
       // 处理历史消息的引用格式
       const documents = new Map();
       message.reference.forEach((ref) => {
-        if (!documents.has(ref.document_id)) {
-          documents.set(ref.document_id, {
+        if (!documents.has(`${ref.dataset_id}-${ref.document_name}`)) {
+          documents.set(`${ref.dataset_id}-${ref.document_name}`, {
             document_id: ref.document_id,
             document_name: ref.document_name,
             dataset_id: ref.dataset_id,
