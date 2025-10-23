@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { RecommendedQuestions } from "./recommended-questions";
 // import remarkGfm from 'remark-gfm'
 import { memo, useMemo } from 'react'
-import { CDN_PREFIX } from "@/constant";
+import { CDN_PREFIX, DOCUMENT_BLACK_LIST } from "@/constant";
 import Markdown from 'markdown-to-jsx'
 
 
@@ -45,6 +45,9 @@ const extractButtons = (content: string) => {
   // 移除所有按钮标记
   cleanContent = content.replace(buttonRegex, '');
 
+  // 移除所有未闭合的按钮标记（如内容结尾处残留的 <<BUTTON|... 或 <<BUTTON|...|...）
+  cleanContent = cleanContent.replace(/<<BUTTON\|[^\n>]*/g, '');
+
   // 过滤掉 ##数字$$ 格式的字符
   cleanContent = cleanContent.replace(/##\d+\$\$/g, '');
 
@@ -53,9 +56,6 @@ const extractButtons = (content: string) => {
 
   // 处理列表数字的转义
   cleanContent = cleanContent.replace(/(^|\n)(\d+)\.\s/g, '$1$2\\. ');
-
-  console.log('cleanContent:', cleanContent);
-
 
   return { buttons, cleanContent: cleanContent };
 };
@@ -107,6 +107,9 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
       const documents = new Map();
       // document_id相同文件也不一样 所以暂时用 document_name 作为 key
       message.references.chunks.forEach((chunk) => {
+        if (DOCUMENT_BLACK_LIST.includes(chunk.document_id)) {
+          return;
+        }
         if (!documents.has(`${chunk.dataset_id}-${chunk.document_name}`)) {
           documents.set(`${chunk.dataset_id}-${chunk.document_name}`, {
             document_id: chunk.document_id,
@@ -120,6 +123,9 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
       // 处理历史消息的引用格式
       const documents = new Map();
       message.reference.forEach((ref) => {
+        if (DOCUMENT_BLACK_LIST.includes(ref.document_id)) {
+          return;
+        }
         if (!documents.has(`${ref.dataset_id}-${ref.document_name}`)) {
           documents.set(`${ref.dataset_id}-${ref.document_name}`, {
             document_id: ref.document_id,
