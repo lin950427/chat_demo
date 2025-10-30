@@ -31,7 +31,7 @@ export function useAuth(): UseAuthReturn {
     isLoading: true
   })
 
-  const [accessToken, setAccessToken] = useLocalStorageState<string | undefined>(
+  const [, setAccessToken] = useLocalStorageState<string | undefined>(
     ACCESS_TOKEN_KEY,
     { defaultValue: undefined }
   )
@@ -90,12 +90,12 @@ export function useAuth(): UseAuthReturn {
     // 有 code 参数，使用 code 获取用户信息
     try {
       const userInfo = await getUserInfoByCode(code)
-      setAccessToken(userInfo.access_token)
-      setUserId(userInfo.userId)
+      setAccessToken(userInfo?.access_token?.access_token)
+      setUserId(userInfo?.user_info?.userId)
       setAuthState({
         isAuthenticated: true,
         isLoading: false,
-        userId: userInfo.userId,
+        userId: userInfo?.user_info?.userId,
         platform: 'eshimin'
       })
 
@@ -152,6 +152,8 @@ export function useAuth(): UseAuthReturn {
 
     const { platform, accessToken: urlAccessToken, code } = getUrlParams()
 
+    const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+
     console.log('Detected platform:', platform, 'URL access token:', urlAccessToken, 'fullURL:', window.location.href);
 
     if (code) {
@@ -179,7 +181,7 @@ export function useAuth(): UseAuthReturn {
         error: '缺少必要的认证参数'
       })
     }
-  }, [accessToken, handleThirdPartyAuth, startEshiminAuth, verifyByAccessToken, verifyByCode])
+  }, [handleThirdPartyAuth, startEshiminAuth, verifyByAccessToken, verifyByCode])
 
 
   // 初始化时执行认证
@@ -206,3 +208,4 @@ export function useAuth(): UseAuthReturn {
     userId
   }
 }
+// 23a3861c-344a-4855-8a80-46987d36303c

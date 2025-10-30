@@ -45,11 +45,23 @@ export const getUserInfo = async ({
  * 使用code获取用户信息及accessToken
  */
 export const getUserInfoByCode = async (code: string): Promise<{
-    access_token: string,
-    expires_in: number,
-    refresh_token: string,
-    userId: string,
-    username: string
+    access_token: {
+        access_token: string
+        refresh_token: string
+        scope: string
+        token_type: string
+        expires_in: number
+        username: string
+    },
+    user_info: {
+        nickName: string
+        idcard: string
+        head_pic: string
+        name: string
+        mobile: string
+        userId: string
+        status: number
+    }
 }> => {
     try {
         const response = await api.get('/eshimin/accessToken.php', { params: { code } })
