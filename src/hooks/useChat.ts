@@ -86,7 +86,7 @@ export function useChat({ userId }: UseChatProps = {}): UseChat {
                 // 1. 获取聊天助手列表并设置第一个助手
                 const assistantsResponse = await chatApi.listAssistants()
                 if (assistantsResponse.code === 0 && assistantsResponse.data.length > 0) {
-                    const chatId = assistantsResponse.data[0].id
+                    const chatId = assistantsResponse.data.find(item => item.name === '小虹')?.id || assistantsResponse.data[0].id
                     setCurrentChatId(chatId)
 
                     // 2. 检查是否有存储的会话ID
