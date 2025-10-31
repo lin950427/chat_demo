@@ -36,7 +36,7 @@ function App() {
         <div className="h-screen w-full overflow-hidden">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/chat" element={<ChatPage userId={userId} />} />
+            <Route path="/chat" element={<ChatPage userId={String(userId)} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
