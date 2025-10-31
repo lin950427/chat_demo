@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 import { cn } from "@/lib/utils";
-import { PersonIcon, GearIcon, HomeIcon } from "@radix-ui/react-icons";
+// import { PersonIcon, GearIcon, HomeIcon } from "@radix-ui/react-icons";
 import { LoadingDots } from "@/components/ui/loading-dots";
 import { useTranslation } from "react-i18next";
 import useSWR from "swr";
@@ -21,7 +21,7 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
   const questions = useMemo(() => questionsInfo?.part2 || [], [questionsInfo])
 
 
-  const icons = [PersonIcon, GearIcon, HomeIcon]
+  // const icons = [PersonIcon, GearIcon, HomeIcon]
 
   const handleQuestionClick = (question: SecondaryQuestions) => {
     if (disabled) return;
@@ -62,7 +62,7 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
     <form onSubmit={handleSubmit} >
       <div className="flex py-1 pl-3 overflow-x-auto no-scrollbar">
         {questions.map((category, index) => {
-          const Icon = icons[index % 3];
+          // const Icon = icons[index % 3];
           return (
             <button
               key={index}
@@ -70,7 +70,7 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
               onClick={() => handleQuestionClick(category)}
               disabled={disabled}
               className={`mr-2 flex items-center px-3 py-1 text-xs rounded-md leading-5 font-semibold border border-border shrink-0  hover:bg-warm-brown-50 disabled:opacity-50 disabled:cursor-not-allowed text-[#333333] ${disabled ? 'bg-[#f5f3ed] ' : 'bg-white'}`}>
-              <Icon className="w-3 h-4.5 mr-1" color="#7F5B14" />
+              {/* <Icon className="w-3 h-4.5 mr-1" color="#7F5B14" /> */}
               {isZH ? category.zh_title : category.en_title}
             </button>
           );
