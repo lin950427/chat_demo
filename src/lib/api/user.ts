@@ -59,7 +59,7 @@ export const getUserInfoByCode = async (code: string): Promise<{
         head_pic: string
         name: string
         mobile: string
-        userId: string
+        userId: number
         status: number
     }
 }> => {

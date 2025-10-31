@@ -144,7 +144,7 @@ export interface UserInfo {
 export interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
-  userId?: string
+  userId?: number
   platform?: Platform
   error?: string
 }

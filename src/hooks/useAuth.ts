@@ -4,7 +4,7 @@ import { getUserInfo, getUserInfoByCode, getFullRedirectUrl } from '../lib/api/u
 import type { Platform, AuthState } from '../lib/api/types'
 import { getUrlParams } from '@/lib/utils'
 
-const ACCESS_TOKEN_KEY = 'user_access_token'
+const USER_ID_KEY = 'user_id'
 
 // 检测平台类型
 const getPlatformSource = (platform: Platform): 'app' | 'h5' => {
@@ -31,12 +31,12 @@ export function useAuth(): UseAuthReturn {
     isLoading: true
   })
 
-  const [, setAccessToken] = useLocalStorageState<string | undefined>(
-    ACCESS_TOKEN_KEY,
+  const [, setStoreUserId] = useLocalStorageState<number | undefined>(
+    USER_ID_KEY,
     { defaultValue: undefined }
   )
 
-  const [userId, setUserId] = useState<string | undefined>(undefined)
+  const [userId, setUserId] = useState<number | undefined>(undefined)
 
 
   // 开始随申办授权
@@ -60,38 +60,37 @@ export function useAuth(): UseAuthReturn {
     }
   }, [])
 
-  const verifyByAccessToken = useCallback(async (accessToken: string) => {
-    try {
-      console.log('使用存储的 access token 获取用户信息:', accessToken);
-      const userInfo = await getUserInfo({
-        accessToken,
-        source: 'app'
-      })
-      console.log('使用存储的 access token 获取到用户信息:', userInfo)
-      setUserId(userInfo.userId)
-      setAuthState({
-        isAuthenticated: true,
-        isLoading: false,
-        userId: userInfo.userId,
-        platform: 'eshimin'
-      })
-    } catch (error) {
-      console.log('使用存储的 access token 获取用户信息失败:', error)
-      console.error('Access token expired:', error)
-      // token 过期，清除存储并重新授权
-      setAccessToken(undefined)
-      setUserId(undefined)
-      await startEshiminAuth()
-    }
-  }, [setAccessToken, startEshiminAuth]);
+  // const verifyByAccessToken = useCallback(async (accessToken: string) => {
+  //   try {
+  //     console.log('使用存储的 access token 获取用户信息:', accessToken);
+  //     const userInfo = await getUserInfo({
+  //       accessToken,
+  //       source: 'app'
+  //     })
+  //     console.log('使用存储的 access token 获取到用户信息:', userInfo)
+  //     setUserId(userInfo.userId)
+  //     setAuthState({
+  //       isAuthenticated: true,
+  //       isLoading: false,
+  //       userId: userInfo.userId,
+  //       platform: 'eshimin'
+  //     })
+  //   } catch (error) {
+  //     console.log('使用存储的 access token 获取用户信息失败:', error)
+  //     console.error('Access token expired:', error)
+  //     // token 过期，清除存储并重新授权
+  //     setUserId(undefined)
+  //     await startEshiminAuth()
+  //   }
+  // }, [startEshiminAuth]);
 
   const verifyByCode = useCallback(async (code: string) => {
     console.log('获取到 code:', code, '直接使用 code 换取用户信息');
     // 有 code 参数，使用 code 获取用户信息
     try {
       const userInfo = await getUserInfoByCode(code)
-      setAccessToken(userInfo?.access_token?.access_token)
-      setUserId(userInfo?.user_info?.userId)
+      setStoreUserId(Number(userInfo?.user_info?.userId))
+      setUserId(Number(userInfo?.user_info?.userId))
       setAuthState({
         isAuthenticated: true,
         isLoading: false,
@@ -113,7 +112,7 @@ export function useAuth(): UseAuthReturn {
         error: '授权失败，请重试'
       })
     }
-  }, [setAccessToken]);
+  }, [setStoreUserId]);
 
 
   // 微信/支付宝环境处理
@@ -127,11 +126,12 @@ export function useAuth(): UseAuthReturn {
 
       console.log('第三方认证获取到用户信息:', userInfo)
 
-      setUserId(userInfo.userId)
+      setUserId(Number(userInfo.userId))
+      setStoreUserId(Number(userInfo.userId))
       setAuthState({
         isAuthenticated: true,
         isLoading: false,
-        userId: userInfo.userId,
+        userId: Number(userInfo.userId),
         platform
       })
     } catch (error) {
@@ -143,7 +143,7 @@ export function useAuth(): UseAuthReturn {
         error: '获取用户信息失败'
       })
     }
-  }, [setUserId])
+  }, [setStoreUserId])
 
   // 主认证函数
   const authenticateUser = useCallback(async () => {
@@ -152,16 +152,28 @@ export function useAuth(): UseAuthReturn {
 
     const { platform, accessToken: urlAccessToken, code } = getUrlParams()
 
-    const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+    const localStorageUserId = localStorage.getItem(USER_ID_KEY);
 
     console.log('Detected platform:', platform, 'URL access token:', urlAccessToken, 'fullURL:', window.location.href);
 
-    if (code) {
+    if (localStorageUserId) {
+      // 有存储的 userId，直接使用
+      console.log('使用存储的 userId 进行认证:', localStorageUserId);
+      setUserId(Number(localStorageUserId))
+      setAuthState({
+        isAuthenticated: true,
+        isLoading: false,
+        userId: Number(localStorageUserId),
+        platform: platform || undefined
+      })
+    } else if (code) {
       await verifyByCode(code)
-    } else if (accessToken) {
-      // 有存储的 access_token，尝试获取用户信息
-      await verifyByAccessToken(accessToken)
-    } else if (!platform) {
+    }
+    // else if (accessToken) {
+    //   // 有存储的 access_token，尝试获取用户信息
+    //   await verifyByAccessToken(accessToken)
+    // } 
+    else if (!platform) {
       // 没有平台参数，直接进入系统（开发环境或直接访问）
       setAuthState({
         isAuthenticated: true,
@@ -181,7 +193,7 @@ export function useAuth(): UseAuthReturn {
         error: '缺少必要的认证参数'
       })
     }
-  }, [handleThirdPartyAuth, startEshiminAuth, verifyByAccessToken, verifyByCode])
+  }, [handleThirdPartyAuth, startEshiminAuth, verifyByCode])
 
 
   // 初始化时执行认证
