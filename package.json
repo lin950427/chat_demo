@@ -4,10 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+  "dev": "vite --host",
+  "build:prod": "tsc -b && BUILD_ENV=prod vite build",
+  "build:test": "tsc -b && vite build",
+  "lint": "eslint .",
+  "preview:test": "vite preview --outDir dist_test",
+  "preview:prod": "BUILD_ENV=prod vite preview --outDir dist_prod"
+
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
