@@ -3,6 +3,10 @@ import react from "@vitejs/plugin-react";
 import legacy from "@vitejs/plugin-legacy";
 import { fileURLToPath } from "url";
 
+// 根据环境变量动态设置 base 路径
+const isProd = process.env.BUILD_ENV === "prod";
+const base = isProd ? "/hongAi" : "/hongAi/uat";
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -19,12 +23,13 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-  base: "/hongAi/uat",
+  base,
   build: {
     // 现代构建的最低语法目标；legacy 插件会额外产出 ES5 兼容包
     target: "es2015",
     // CSS 处理的目标浏览器，确保旧版移动端前缀与语法降级
     cssTarget: ["chrome49", "ios9"],
+    outDir: isProd ? "dist_prod" : "dist_test",
   },
   server: {
     proxy: {
