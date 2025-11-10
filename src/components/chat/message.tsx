@@ -307,10 +307,10 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
                 {/* <h4 className="mb-2">{t("chat.possibleApplications")}</h4> */}
                 {buttons.map((button, index) => (
                   <div key={index} className={`flex justify-between px-3 py-2.5 bg-[#f7f4ef] rounded-md items-center ${index !== buttons.length - 1 ? "mb-2" : ""}`}>
-                    <span className="font-semibold">
+                    <span className="font-semibold line-clamp-2 break-all">
                       {button.text}
                     </span>
-                    <CustomButton key={index} url={button.url}>
+                    <CustomButton key={index} url={button.url} className="flex-shrink-0">
                       {t("chat.applyNow")}
                     </CustomButton>
                   </div>

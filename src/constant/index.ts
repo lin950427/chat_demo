@@ -1,4 +1,6 @@
-export const LANGUAGE_KEY = "SELECTED_LANGUAGE";
+export const LANGUAGE_KEY = "SELECTED_LANGUAGE_1";
+
+export const IS_SIGNED_KEY = "IS_SIGNED";
 
 export const SUPPORT_LANGUAGES = [
     {
