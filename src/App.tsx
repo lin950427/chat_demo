@@ -3,6 +3,9 @@ import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/home";
 import ChatPage from "./pages/chat";
 // import { useAuth } from "./hooks/useAuth";
+import Disclaimer from "./pages/disclaimer";
+import ServiceAgreement from "./pages/service-agreement";
+// import { useAuth } from "./hooks/useAuth";
 import "./i18n";
 import { SWRConfig } from "swr";
 import { swrConfig } from "./lib/swr-config";
@@ -37,7 +40,9 @@ function App() {
         <div className="h-screen w-full overflow-hidden">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/chat" element={<ChatPage userId={userId} />} />
+            <Route path="/chat" element={<ChatPage userId={undefined} />} />
+            <Route path="/disclaimer" element={<Disclaimer />} />
+            <Route path="/service-agreement" element={<ServiceAgreement />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
