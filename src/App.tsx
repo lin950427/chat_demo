@@ -32,7 +32,7 @@ function App() {
   //   return null;
   // }
 
-  const userId = undefined
+  // const userId = undefined
 
   return (
     <SWRConfig value={swrConfig}>
