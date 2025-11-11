@@ -1,3 +1,4 @@
+import MessageFeedback from "./message-feedback";
 import { cn } from "@/lib/utils";
 import type { Reference, ReferenceItem } from "@/lib/api/types";
 import { LoadingDots } from "@/components/ui/loading-dots";
@@ -7,6 +8,7 @@ import { RecommendedQuestions } from "./recommended-questions";
 import { memo, useMemo } from 'react'
 import { CDN_PREFIX, DOCUMENT_BLACK_LIST } from "@/constant";
 import Markdown from 'markdown-to-jsx'
+import AIMessageWrapper from "./ai-message-wrapper";
 
 
 // 按钮组件
@@ -66,14 +68,20 @@ const MessageContent = memo(({ content }: { content: string }) => {
 
   return (
     <Markdown
-      className='markdown-body'
+      className="markdown-body"
       options={{
         overrides: {
           strong: (values) => {
-            return <strong className="my-1 inline-block">{values.children}</strong>
+            return <strong className="my-1 inline-block">{values.children}</strong>;
           },
           hr: (values) => values.children || null,
-        }
+          ul: ({ children }) => (
+            <ul className="pl-4 list-disc marker:text-[#c2a168]">{children}</ul>
+          ),
+          li: ({ children }) => (
+            <li className="leading-relaxed text-[#393939]">{children}</li>
+          ),
+        },
       }}
     >
       {content}
@@ -83,6 +91,7 @@ const MessageContent = memo(({ content }: { content: string }) => {
 
 interface MessageProps {
   message: {
+    id?: string;
     role: "user" | "assistant";
     content: string;
     references?: Reference;
@@ -154,40 +163,6 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
     );
   }
 
-  // const handlePreviewDocument = async (
-  //   datasetId: string,
-  //   documentId: string,
-  //   fileName: string
-  // ) => {
-  //   try {
-
-  //     // 使用已有的 downloadDocument API 获取文档
-  //     const blob = await downloadDocument(datasetId, documentId, fileName);
-
-
-  //     // 创建 blob URL
-  //     const url = URL.createObjectURL(blob);
-
-  //     // 使用 a 标签模拟点击，不限制文件类型
-  //     const link = document.createElement("a");
-  //     link.href = url;
-  //     link.download = fileName;
-  //     link.style.display = "none";
-
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-
-  //     // 清理对象URL
-  //     setTimeout(() => URL.revokeObjectURL(url), 1000);
-  //   } catch (error) {
-  //     console.error("文档预览失败:", error);
-  //     alert(
-  //       `文档预览失败: ${error instanceof Error ? error.message : "未知错误"}`
-  //     );
-  //   }
-  // };
-
   // 获取头像路径
   const base = import.meta.env.BASE_URL || "/";
   const avatarSrc = `${base.replace(/\/$/, "")}/xiaohong.png`;
@@ -227,7 +202,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
               <div className="px-3 py-2.5">
                 <div className="w-full text-sm break-words whitespace-pre-wrap leading-[1.5] text-slate-900">
 
-                  {isLoading ? (
+                  {isLoading && !message?.content ? (
                     <span className="inline-flex items-center text-nowrap">{t("chat.typing")}<img src={loadingGifSrc} className="w-5 mr-3 ml-0.5 -mb-1" /></span>
                   ) : (
                     <MessageContent content={cleanContent} />
@@ -240,99 +215,110 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
       </div>
       {/* 引用资料 */}
       {uniquedReferences.length > 0 && (
-        <div className="flex -mt-3">
-          <div className="w-[42px]" />
-          <div className="flex-1">
-            <div className="max-w-[calc(100vw-56px-50px)]">
-              <div className="bg-white px-3 pt-2.5 pb-0.5 text-sm rounded-md mb-6">
-                <h4 className="mb-2">{t("chat.relatedDocuments")}</h4>
-                <div className="flex flex-col">
-                  {uniquedReferences.map((doc) => (
-                    <a
-                      key={doc.document_id}
-                      // onClick={() =>
-                      //   handlePreviewDocument(
-                      //     doc.dataset_id,
-                      //     doc.document_id,
-                      //     doc.document_name
-                      //   )
-                      // }
-                      // disabled={isLoading}
-                      // className={cn(
-                      //   "flex items-center p-2 rounded-md transition-colors group",
-                      //   index !== uniquedReferences.length - 1 ? "mb-2" : "",
-                      //   isLoading
-                      //     ? "opacity-50 cursor-not-allowed"
-                      //     : "hover:bg-muted/50 active:bg-muted/70"
-                      // )}
-                      href={`${CDN_PREFIX}/${doc.document_name}`}
-                      className="bg-[#EAE4D766] px-3 py-2 rounded-md flex items-center mb-2"
-                    >
-                      <div
-                        className={cn(
-                          "flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center transition-colors",
-                          isLoading ? "bg-primary/5" : ''
-                        )}>
-                        {isLoading ? (
-                          <LoadingDots className="text-primary scale-75" />
-                        ) : (
-                          <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12.2336 1.33185H5.29905C4.34122 1.33185 3.5741 2.10764 3.5741 3.06547L3.56543 16.9345C3.56543 17.8923 4.33257 18.6681 5.29038 18.6681H15.7008C16.6587 18.6681 17.4344 17.8923 17.4344 16.9345V6.53274L12.2336 1.33185ZM13.9672 15.2009H7.03268V13.4672H13.9672V15.2009ZM13.9672 11.7336H7.03268V9.99999H13.9672V11.7336ZM11.3668 7.39955V2.63207L16.1342 7.39955H11.3668Z" fill="#C2A168" />
-                          </svg>
+        <AIMessageWrapper>
+          <div className="bg-white px-3 pt-2.5 pb-0.5 text-sm rounded-md mb-6">
+            <h4 className="mb-2">{t("chat.relatedDocuments")}</h4>
+            <div className="flex flex-col">
+              {uniquedReferences.map((doc) => (
+                <a
+                  key={doc.document_id}
+                  // onClick={() =>
+                  //   handlePreviewDocument(
+                  //     doc.dataset_id,
+                  //     doc.document_id,
+                  //     doc.document_name
+                  //   )
+                  // }
+                  // disabled={isLoading}
+                  // className={cn(
+                  //   "flex items-center p-2 rounded-md transition-colors group",
+                  //   index !== uniquedReferences.length - 1 ? "mb-2" : "",
+                  //   isLoading
+                  //     ? "opacity-50 cursor-not-allowed"
+                  //     : "hover:bg-muted/50 active:bg-muted/70"
+                  // )}
+                  href={`${CDN_PREFIX}/${doc.document_name}`}
+                  className="bg-[#EAE4D766] px-3 py-2 rounded-md flex items-center mb-2"
+                >
+                  <div
+                    className={cn(
+                      "flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center transition-colors",
+                      isLoading ? "bg-primary/5" : ''
+                    )}>
+                    {isLoading ? (
+                      <LoadingDots className="text-primary scale-75" />
+                    ) : (
+                      <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.2336 1.33185H5.29905C4.34122 1.33185 3.5741 2.10764 3.5741 3.06547L3.56543 16.9345C3.56543 17.8923 4.33257 18.6681 5.29038 18.6681H15.7008C16.6587 18.6681 17.4344 17.8923 17.4344 16.9345V6.53274L12.2336 1.33185ZM13.9672 15.2009H7.03268V13.4672H13.9672V15.2009ZM13.9672 11.7336H7.03268V9.99999H13.9672V11.7336ZM11.3668 7.39955V2.63207L16.1342 7.39955H11.3668Z" fill="#C2A168" />
+                      </svg>
 
-                        )}
-                      </div>
-                      <span className="w-2 inline-block" />
-                      <div className="flex-1 min-w-0 text-left">
-                        <div className="text-xs font-semibold truncate">
-                          {doc.document_name}
-                        </div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-
-              </div>
+                    )}
+                  </div>
+                  <span className="w-2 inline-block" />
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="text-xs font-semibold truncate">
+                      {doc.document_name}
+                    </div>
+                  </div>
+                </a>
+              ))}
             </div>
           </div>
-        </div>
+        </AIMessageWrapper>
       )}
+
       {/* 消息中的自定义按钮 */}
       {buttons.length > 0 && (
-        <div className="flex -mt-3">
-          <div className="w-[42px]" />
-          <div className="flex-1">
-            <div className="max-w-[calc(100vw-56px-50px)]">
-              <div className="bg-white px-3 py-2.5 text-sm rounded-md mb-6">
-                {/* <h4 className="mb-2">{t("chat.possibleApplications")}</h4> */}
-                {buttons.map((button, index) => (
-                  <div key={index} className={`flex justify-between px-3 py-2.5 bg-[#f7f4ef] rounded-md items-center ${index !== buttons.length - 1 ? "mb-2" : ""}`}>
-                    <span className="font-semibold line-clamp-2 break-all">
-                      {button.text}
-                    </span>
-                    <CustomButton key={index} url={button.url} className="flex-shrink-0">
-                      {t("chat.applyNow")}
-                    </CustomButton>
-                  </div>
-                ))}
+        <AIMessageWrapper>
+          <div className="bg-white px-3 py-2.5 text-sm rounded-md mb-6">
+            {/* <h4 className="mb-2">{t("chat.possibleApplications")}</h4> */}
+            {buttons.map((button, index) => (
+              <div key={index} className={`flex justify-between px-3 py-2.5 bg-[#f7f4ef] rounded-md items-center ${index !== buttons.length - 1 ? "mb-2" : ""}`}>
+                <span className="font-semibold line-clamp-2 break-all">
+                  {button.text}
+                </span>
+                <CustomButton key={index} url={button.url} className="flex-shrink-0">
+                  {t("chat.applyNow")}
+                </CustomButton>
               </div>
-            </div>
+            ))}
           </div>
-        </div>
+        </AIMessageWrapper>
       )}
+
+      {/* 消息中的自定义按钮 */}
+      {buttons.length > 0 && (
+        <AIMessageWrapper>
+          <div className="bg-white px-3 py-2.5 text-sm rounded-md mb-6">
+            {/* <h4 className="mb-2">{t("chat.possibleApplications")}</h4> */}
+            {buttons.map((button, index) => (
+              <div key={index} className={`flex justify-between px-3 py-2.5 bg-[#f7f4ef] rounded-md items-center ${index !== buttons.length - 1 ? "mb-2" : ""}`}>
+                <span className="font-semibold line-clamp-2 break-all">
+                  {button.text}
+                </span>
+                <CustomButton key={index} url={button.url} className="flex-shrink-0">
+                  {t("chat.applyNow")}
+                </CustomButton>
+              </div>
+            ))}
+          </div>
+        </AIMessageWrapper>
+      )}
+
+            {/* 消息赞同/不赞同反馈 */}
+      {!isUser && message.id && !isLoading ? <AIMessageWrapper>
+        <div className="flex justify-end -mt-1 mb-3">
+          <MessageFeedback id={message.id} />
+        </div>
+      </AIMessageWrapper> : null}
+
       {/* 欢迎消息的推荐问题 */}
       {isWelcomeMessage && (
-        <div className="flex -mt-3">
-          <div className="w-[42px]" />
-          <div className="flex-1">
-            <div className="max-w-[calc(100vw-56px-50px)]">
-              <RecommendedQuestions onQuestionClick={onQuestionClick} />
-            </div>
-          </div>
-        </div>
+        <AIMessageWrapper>
+          <RecommendedQuestions onQuestionClick={onQuestionClick} />
+        </AIMessageWrapper>
       )}
     </>
-
   );
 }
 

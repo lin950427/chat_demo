@@ -7,6 +7,7 @@ export interface ReferenceItem {
 }
 
 export interface Message {
+  id?: string
   role: 'user' | 'assistant'
   content: string
   references?: Reference         // 实时对话时的引用格式

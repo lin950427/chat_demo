@@ -158,7 +158,9 @@ export function useChat({ userId }: UseChatProps = {}): UseChat {
                                     newMessages.push({
                                         role: 'assistant',
                                         content: currentResponse,
-                                        references: reference
+                                        references: reference,
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        id: (data.data as unknown as any)?.id // 设置消息 ID
                                     })
                                 }
 

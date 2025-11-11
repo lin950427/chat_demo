@@ -67,7 +67,7 @@ export function MessageList({ messages, isLoading, onQuestionClick, hasSession }
                                 <Message
                                     key={index}
                                     message={message}
-                                    isLoading={false}
+                                    isLoading={isLoading && index === messages.length - 1}
                                     isWelcomeMessage={messages.length === 1 && message.role !== 'user'}
                                     onQuestionClick={onQuestionClick}
                                     // className='mb-4'
@@ -79,7 +79,7 @@ export function MessageList({ messages, isLoading, onQuestionClick, hasSession }
                                 <Message
                                     message={{
                                         role: 'assistant',
-                                        content: '正在输入'
+                                        content: ''
                                     }}
                                     isLoading={true}
                                 />
