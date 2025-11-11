@@ -8,7 +8,7 @@ interface NoticeModalProps {
 }
 
 export default function NoticeModal({ visible, onAgree, onDisagree }: NoticeModalProps) {
-    const [checked, setChecked] = useState(false);
+    const [checked, setChecked] = useState(true);
 
     if (!visible) return null;
     return (
@@ -19,9 +19,9 @@ export default function NoticeModal({ visible, onAgree, onDisagree }: NoticeModa
                     <p className="mb-2">感谢您使用“AI小虹”，我们仅在为您提供服务所需的范围内收集和使用相关信息，并将全力保障您的个人隐私与数据安全。</p>
                     <p className="mb-2">答复内容来源于虹口区人才政策智能解析。如有疑问，可通过人工服务进一步确认。</p>
                     <p className="mb-2">为保障您的权益，请认真阅读
-                        <Link to="/service-agreement" className="text-[#7f5b14] underline mx-1" target="_blank">《服务使用协议》</Link>
+                        <Link to="/service-agreement" className="text-[#7f5b14] underline mx-1">《服务使用协议》</Link>
                         和
-                        <Link to="/disclaimer" className="text-[#7f5b14] underline mx-1" target="_blank">《责任告知声明》</Link>
+                        <Link to="/disclaimer" className="text-[#7f5b14] underline mx-1">《责任告知声明》</Link>
                         。
                     </p>
                 </div>

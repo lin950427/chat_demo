@@ -24,6 +24,9 @@ const Home = () => {
         // search: currentSearchParams.toString()
       }, { replace: true });
       return;
+    } else if (savedLanguage) {
+      // 如果选择了语言但未同意使用须知，显示使用须知弹窗
+      setModalVisible(true);
     }
 
     // 未选择语言时默认展示中文
@@ -58,8 +61,6 @@ const Home = () => {
   const base = import.meta.env.BASE_URL || "/";
   const avatarSrc = `${base.replace(/\/$/, "")}/xiaohong.gif`;
 
-  // if (localStorage.getItem(LANGUAGE_KEY)) return null;
-
   return (
     <>
       <NoticeModal
@@ -73,25 +74,28 @@ const Home = () => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col items-center pt-12">
           {/* Avatar */}
-          <div className="mb-8 w-36 h-36">
-            <img
-              src={avatarSrc}
-              alt="avatar"
-              className="w-full h-full object-contain"
-              onError={(e) => {
-                const target = e.currentTarget;
-                target.style.display = 'none';
-                const parent = target.parentElement;
-                if (parent && parent.querySelector('[data-fallback]') == null) {
-                  const span = document.createElement('span');
-                  span.dataset.fallback = 'true';
-                  span.textContent = '🤖';
-                  span.className = 'text-5xl';
-                  parent.appendChild(span);
-                }
-              }}
-            />
+          <div className="mb-8 w-[140px] h-[140px] overflow-hidden">
+            <div className="w-36 h-36 -ml-0.5 -mt-0.5">
+              <img
+                src={avatarSrc}
+                alt="avatar"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent && parent.querySelector('[data-fallback]') == null) {
+                    const span = document.createElement('span');
+                    span.dataset.fallback = 'true';
+                    span.textContent = '🤖';
+                    span.className = 'text-5xl';
+                    parent.appendChild(span);
+                  }
+                }}
+              />
+            </div>
           </div>
+
 
           {/* Welcome Text */}
           <div className="text-center mb-6">
