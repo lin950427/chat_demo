@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { RecommendedQuestions } from "./recommended-questions";
 // import remarkGfm from 'remark-gfm'
 import { memo, useMemo } from 'react'
-import { CDN_PREFIX, DOCUMENT_BLACK_LIST } from "@/constant";
+import { CDN_PREFIX, DOCUMENT_BLACK_LIST, WELCOME_MESSAGE_EN } from "@/constant";
 import Markdown from 'markdown-to-jsx'
 import AIMessageWrapper from "./ai-message-wrapper";
 
@@ -103,12 +103,13 @@ interface MessageProps {
   onQuestionClick?: (question: string) => void;
 }
 const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionClick }: MessageProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isUser = message.role === "user";
 
   const { buttons, cleanContent } = useMemo(() => {
+    if (isWelcomeMessage) return { buttons: [], cleanContent: i18n.language === 'en-US' ? WELCOME_MESSAGE_EN : message.content };
     return extractButtons(message.content);
-  }, [message.content]);
+  }, [i18n.language, isWelcomeMessage, message.content]);
 
   const uniquedReferences = useMemo(() => {
     if (message.references?.chunks) {

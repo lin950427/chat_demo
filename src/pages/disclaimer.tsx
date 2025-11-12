@@ -1,16 +1,33 @@
+import { useTranslation } from "react-i18next";
 
 export default function Disclaimer() {
+    const { i18n } = useTranslation();
+    const isEn = i18n.language === 'en-US';
     return (
         <div className="h-screen bg-white p-4 text-[#333333] overflow-auto">
-            <h4 className="text-base font-bold mb-2">责任告知声明</h4>
+            <h4 className="text-base font-bold mb-2">{isEn ? 'Disclaimer' : '责任告知声明'}</h4>
             <div className="leading-6 text-sm">
-                <p className="mb-2">在使用“AI小虹”提供的移动端人才政策咨询服务时，请您务必注意以下事项:</p>
-                <p className="mb-2"><span className="font-semibold">1.信息准确性：</span>本服务提供的信息仅供参考不构成任何法律建议或承诺。用户在使用前应自行核实相关信息的准确性和适用性。</p>
-                <p className="mb-2"><span className="font-semibold">2.政策变动：</span>人才政策可能随时间发生变化请用户及时关注最新政策动态，以免因政策变动造成不便或损失。</p>
-                <p className="mb-2"><span className="font-semibold">3.个人责任：</span>用户在使用本服务过程中应遵守国家法律法规和道德规范，对因自身行为引起的任何后果承担全部责任。</p>
-                <p className="mb-2"><span className="font-semibold">4.数据安全：</span>我们重视用户数据安全，但用户也需自行承担因个人信息泄露或不当使用而产生的风险。建议用户采取必要措施保护个人信息和账片安全。</p>
-                <p className="mb-2"><span className="font-semibold">5.免责范围：</span>对于因不可抗力、第三方行为技术故障等非服务提供方原因导致的服务中断、数据丢失或其他损失，我们不承担任何责任，</p>
-                <p className="mb-2">请用户在使用“AI小虹”时仔细阅读上述协议和声明内容，确保充分理解并同意相关条款后再进行操作。感谢您的理解与支持。</p>
+                {isEn ? (
+                    <>
+                        <p className="mb-2">When using the "AI Xiaohong" mobile talent policy consultation service, please read and note the following:</p>
+                        <p className="mb-2"><span className="font-semibold">1.Information Accuracy:</span> The information provided by this service is for reference only and does not constitute any legal advice or commitment. Users should verify the accuracy and applicability of relevant information before use.</p>
+                        <p className="mb-2"><span className="font-semibold">2.Policy Changes:</span> Talent-related policies may change over time. Users are advised to stay informed of the latest updates to avoid inconvenience or loss caused by policy adjustments.</p>
+                        <p className="mb-2"><span className="font-semibold">3.User Responsibility:</span> Users must comply with national laws, regulations, and ethical standards when using this service. Users bear full responsibility for any consequences arising from their own actions during use.</p>
+                        <p className="mb-2"><span className="font-semibold">4.Data Security:</span> We value user data security, but users should also recognize the risks of information leakage or misuse due to their own actions. It is recommended that users take necessary measures to protect their personal information and account security.</p>
+                        <p className="mb-2"><span className="font-semibold">5.Scope of Liability:</span> We are not liable for any service interruption, data loss, or other damages caused by force majeure, third-party actions, technical failures, or issues beyond our control.</p>
+                        <p className="mb-2">Please read the above agreements and statements carefully before using "AI Xiaohong." Proceed only after you fully understand and agree to the relevant terms. Thank you for your understanding and support.</p>
+                    </>
+                ) : (
+                    <>
+                        <p className="mb-2">在使用"AI小虹"提供的移动端人才政策咨询服务时，请您务必注意以下事项:</p>
+                        <p className="mb-2"><span className="font-semibold">1.信息准确性：</span>本服务提供的信息仅供参考不构成任何法律建议或承诺。用户在使用前应自行核实相关信息的准确性和适用性。</p>
+                        <p className="mb-2"><span className="font-semibold">2.政策变动：</span>人才政策可能随时间发生变化请用户及时关注最新政策动态，以免因政策变动造成不便或损失。</p>
+                        <p className="mb-2"><span className="font-semibold">3.个人责任：</span>用户在使用本服务过程中应遵守国家法律法规和道德规范，对因自身行为引起的任何后果承担全部责任。</p>
+                        <p className="mb-2"><span className="font-semibold">4.数据安全：</span>我们重视用户数据安全，但用户也需自行承担因个人信息泄露或不当使用而产生的风险。建议用户采取必要措施保护个人信息和账片安全。</p>
+                        <p className="mb-2"><span className="font-semibold">5.免责范围：</span>对于因不可抗力、第三方行为技术故障等非服务提供方原因导致的服务中断、数据丢失或其他损失，我们不承担任何责任，</p>
+                        <p className="mb-2">请用户在使用"AI小虹"时仔细阅读上述协议和声明内容，确保充分理解并同意相关条款后再进行操作。感谢您的理解与支持。</p>
+                    </>
+                )}
             </div>
         </div>
     );
