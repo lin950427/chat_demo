@@ -68,7 +68,7 @@ export function MessageList({ messages, isLoading, onQuestionClick, hasSession }
                                     key={index}
                                     message={message}
                                     isLoading={false}
-                                    isWelcomeMessage={messages.length === 1 && message.role !== 'user'}
+                                    isWelcomeMessage={!index && message.role !== 'user'} // TODO 此处将来可能要更换
                                     onQuestionClick={onQuestionClick}
                                     // className='mb-4'
                                 />
