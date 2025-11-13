@@ -287,26 +287,7 @@ const Message = ({ message, className, isLoading, isWelcomeMessage, onQuestionCl
         </AIMessageWrapper>
       )}
 
-      {/* 消息中的自定义按钮 */}
-      {buttons.length > 0 && (
-        <AIMessageWrapper>
-          <div className="bg-white px-3 py-2.5 text-sm rounded-md mb-6">
-            {/* <h4 className="mb-2">{t("chat.possibleApplications")}</h4> */}
-            {buttons.map((button, index) => (
-              <div key={index} className={`flex justify-between px-3 py-2.5 bg-[#f7f4ef] rounded-md items-center ${index !== buttons.length - 1 ? "mb-2" : ""}`}>
-                <span className="font-semibold line-clamp-2 break-all">
-                  {button.text}
-                </span>
-                <CustomButton key={index} url={button.url} className="flex-shrink-0">
-                  {t("chat.applyNow")}
-                </CustomButton>
-              </div>
-            ))}
-          </div>
-        </AIMessageWrapper>
-      )}
-
-            {/* 消息赞同/不赞同反馈 */}
+      {/* 消息赞同/不赞同反馈 */}
       {!isUser && message.id && !isLoading ? <AIMessageWrapper>
         <div className="flex justify-end -mt-1 mb-3">
           <MessageFeedback id={message.id} />
