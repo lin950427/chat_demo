@@ -46,3 +46,5 @@ export const DOCUMENT_BLACK_LIST = [
 export const CDN_PREFIX = "https://cdn.impdigital.cn/hongAi/%E4%BA%BA%E6%89%8D%E5%AE%89%E5%B1%85%E7%B4%A0%E6%9D%90%E5%8C%85";
 
 export const WELCOME_MESSAGE_EN = "Hello! I’m your dedicated talent service assistant, AI Xiaohong.I’m here to provide you with guidance on talent policy consultations and related services in Hongkou District.To help me give you the most accurate policy answers, please try to describe your question as completely as possible.You can also click on the following “Frequently Asked Questions” to quickly learn about relevant policies and service instructions."
+
+export const USER_ID_KEY = 'user_id'

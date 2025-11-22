@@ -3,8 +3,8 @@ import { useLocalStorageState } from 'ahooks'
 import { getUserInfo, getUserInfoByCode, getFullRedirectUrl } from '../lib/api/user'
 import type { Platform, AuthState } from '../lib/api/types'
 import { getUrlParams } from '@/lib/utils'
+import { USER_ID_KEY } from '@/constant'
 
-const USER_ID_KEY = 'user_id'
 
 // 检测平台类型
 const getPlatformSource = (platform: Platform): 'app' | 'h5' => {

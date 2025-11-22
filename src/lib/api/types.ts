@@ -171,3 +171,5 @@ export interface SecondaryQuestions {
   zh_question: string
   en_question: string
 }
+
+export type ActionType = 'language_page_pv' | 'language_switch_click' | 'chat_page_pv' | 'chat_language_switch_click'

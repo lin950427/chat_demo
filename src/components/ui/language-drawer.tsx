@@ -1,4 +1,5 @@
 import { SUPPORT_LANGUAGES } from "@/constant";
+import { reportAction } from "@/lib/api/report";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -107,6 +108,7 @@ export function LanguageDrawer({
             }
         };
     }, []);
+
     return (
         <Dialog.Root open={isOpen} onOpenChange={onClose}>
             <Dialog.Portal>
@@ -153,6 +155,7 @@ export function LanguageDrawer({
                                 key={language.code}
                                 onClick={() => {
                                     i18n.changeLanguage(language.code);
+                                    reportAction(location.hash.includes('chat') ? 'chat_language_switch_click' : 'language_switch_click');
                                     onClose();
                                 }}
                                 className={`w-full mb-3 flex items-center justify-between py-1.5 rounded-lg transition-colors transform-gpu will-change-transform`}

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { IS_SIGNED_KEY, LANGUAGE_KEY, SUPPORT_LANGUAGES } from "@/constant";
 import { LanguageDrawer } from "@/components/ui/language-drawer";
 import NoticeModal from "@/components/notice-modal";
+import { reportAction } from "@/lib/api/report";
 
 const Home = () => {
   const { i18n, t } = useTranslation();
@@ -53,6 +54,10 @@ const Home = () => {
   const handleDisagree = useCallback(() => {
     setModalVisible(false);
     localStorage.removeItem(IS_SIGNED_KEY);
+  }, []);
+
+  useEffect(() => {
+    reportAction('language_page_pv');
   }, []);
 
   // 等待i18n初始化完成

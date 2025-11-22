@@ -3,6 +3,8 @@ import { MessageList } from "@/components/chat/message-list";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatHeader } from "@/components/chat/chat-header";
 import { useChat } from "@/hooks/useChat";
+import { useEffect } from "react";
+import { reportAction } from "@/lib/api/report";
 
 interface ChatPageProps {
   userId?: string;
@@ -11,6 +13,7 @@ interface ChatPageProps {
 export default function ChatPage({ userId }: ChatPageProps) {
   const { messages, sendMessage, isLoading, currentSessionId } = useChat({ userId });
 
+  useEffect(() => { reportAction('chat_page_pv') }, []);
 
   return (
     <Layout bannerHeight={0} className="bg-warm-brown-50">
