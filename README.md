@@ -8,7 +8,7 @@
 
 - `src/` - 源代码
   - `components/` - 可复用组件（聊天、UI、布局等）
-  - `pages/` - 页面级组件（home、chat、disclaimer 等）
+  - `pages/` - 页面级组件（home、chat 等）
   - `lib/` - 请求封装、工具函数、hooks 等
   - `i18n/` - 国际化配置
   - `main.tsx` - 应用入口
@@ -18,38 +18,36 @@
 
 ## 快速开始
 
-确保已安装 Node.js（推荐 v16+）与 pnpm 或 npm。
+确保已安装 Node.js（推荐 v16+）与 pnpm。当前master分支对应测试环境，prod分支对应生产环境
 
 1. 安装依赖
 
 ```bash
 pnpm install
-# 或者
-npm install
 ```
 
 2. 开发模式（带热重载）
 
 ```bash
 pnpm dev
-# 或者
-npm run dev
 ```
 
-3. 生产构建
+3. 构建
 
 ```bash
-pnpm build
-# 或者
-npm run build
+# 生产构建
+pnpm build:prod
+# 测试环境构建
+pnpm build:test
+
 ```
 
 4. 本地预览构建产物
 
 ```bash
-pnpm preview
+pnpm preview:test
 # 或者
-npm run preview
+npm preview:prod
 ```
 
 ## 项目要点
@@ -59,14 +57,3 @@ npm run preview
 - 国际化通过 `react-i18next` 实现，语言文件在 `src/i18n`。
 - Axios 封装在 `src/lib/api` 下（`axios.ts`、`chat.ts` 等）。
 
-## 贡献
-
-如需修改或添加功能，请创建分支并提交 PR。提交说明请包含变更目的与影响范围。
-
-## 许可
-
-默认未指定许可证。如需开源发布，请添加适当的 LICENSE 文件。
-
----
-
-如果你想我把 README 调整为中文/英文双语格式、添加使用截图、或补充 API 文档，我可以继续完善。

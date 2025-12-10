@@ -17,7 +17,6 @@ function App() {
   useEffect(() => {
     // 初始化调试工具
     initVConsole();
-    console.log("当前路由", window.location.href);
   }, []);
 
   const { isAuthenticated, isLoading, userId } = useAuth();
@@ -30,8 +29,6 @@ function App() {
   if (!isAuthenticated) {
     return null;
   }
-
-  // const userId = undefined
 
   return (
     <SWRConfig value={swrConfig}>

@@ -21,7 +21,6 @@ interface UseChatProps {
 }
 
 export function useChat({ userId }: UseChatProps = {}): UseChat {
-    console.log(`useChat 中的 userId: ${userId}`)
     const [messages, setMessages] = useState<Message[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [sessions, setSessions] = useState<Session[]>([])

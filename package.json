@@ -10,7 +10,6 @@
   "lint": "eslint .",
   "preview:test": "vite preview --outDir dist_test",
   "preview:prod": "BUILD_ENV=prod vite preview --outDir dist_prod"
-
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
