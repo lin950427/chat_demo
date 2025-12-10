@@ -1,69 +1,58 @@
-# React + TypeScript + Vite
+# chat_demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+轻量的 React + TypeScript + Vite 聊天演示项目（AI 小虹前端）。
 
-Currently, two official plugins are available:
+本仓库包含一个使用 Vite 构建的静态前端应用，包含国际化、聊天组件、以及与后端 API 的轻量封装。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 目录结构（主要文件）
 
-## Expanding the ESLint configuration
+- `src/` - 源代码
+  - `components/` - 可复用组件（聊天、UI、布局等）
+  - `pages/` - 页面级组件（home、chat 等）
+  - `lib/` - 请求封装、工具函数、hooks 等
+  - `i18n/` - 国际化配置
+  - `main.tsx` - 应用入口
+- `public/` - 静态资源
+- `dist_test/` `dist_prod/` - 构建产物（测试/生产）
+- `vite.config.ts`, `tsconfig.json`, `package.json` - 构建与依赖配置
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 快速开始
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+确保已安装 Node.js（推荐 v16+）与 pnpm。当前master分支对应测试环境，prod分支对应生产环境
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+1. 安装依赖
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. 开发模式（带热重载）
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm dev
 ```
+
+3. 构建
+
+```bash
+# 生产构建
+pnpm build:prod
+# 测试环境构建
+pnpm build:test
+
+```
+
+4. 本地预览构建产物
+
+```bash
+pnpm preview:test
+# 或者
+npm preview:prod
+```
+
+## 项目要点
+
+- 使用 Tailwind CSS（见 `tailwind.config.js`）进行样式化。
+- 使用 `react-router-dom` 做路由。部分页面和路由在 `src/pages` 中。
+- 国际化通过 `react-i18next` 实现，语言文件在 `src/i18n`。
+- Axios 封装在 `src/lib/api` 下（`axios.ts`、`chat.ts` 等）。

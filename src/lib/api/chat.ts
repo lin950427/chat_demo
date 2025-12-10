@@ -103,14 +103,11 @@ export const sendMessage = async (
             lines.splice(0, length - 3);
           }
 
-          console.log('Received SSE chunk:', lines);
-          
           for (const line of lines) {
             if (line.trim() && line.startsWith('data:')) {
               try {
                 const data = JSON.parse(line.slice(5)) as ChatStreamResponse
                 // 发送给回调函数处理
-                console.log('Parsed SSE data:', data);
                 onData?.(data)
               } catch (e) {
                 console.error('Failed to parse SSE message:', line, e)
