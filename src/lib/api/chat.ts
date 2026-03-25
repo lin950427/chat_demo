@@ -98,9 +98,9 @@ export const sendMessage = async (
           const lines = chunk.split('\n').filter((item: string) => item !== '');
 
           const length = lines.length;
-          if (length > 3) {
-            // 只保留最后3行，防止内存占用过高
-            lines.splice(0, length - 3);
+          if (length > 1) {
+            // 只保留最后1行，防止内存占用过高
+            lines.splice(0, length - 1);
           }
 
           for (const line of lines) {

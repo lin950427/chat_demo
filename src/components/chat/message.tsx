@@ -54,10 +54,13 @@ const extractButtons = (content: string) => {
   cleanContent = cleanContent.replace(/##\d+\$\$/g, '');
 
   // 处理连续的换行符，将两个或更多连续的换行符替换为一个
-  // cleanContent = cleanContent.replace(/\n/g, '\n');
+  cleanContent = cleanContent.replace(/\n/g, '\n');
+
+  // 过滤掉形如 [ID:2] 或 [ID: 2] 的标识（支持大小写和可选空格）
+  cleanContent = cleanContent.replace(/\[ID:\s*\d+\]/gi, '');
 
   // 处理列表数字的转义
-  cleanContent = cleanContent.replace(/(^|\n)(\d+)\.\s/g, '$1$2\\. ');
+  // cleanContent = cleanContent.replace(/(^|\n)(\d+)\.\s/g, '$1$2\\. ');
 
   return { buttons, cleanContent: cleanContent };
 };

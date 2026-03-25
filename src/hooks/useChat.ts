@@ -149,7 +149,7 @@ export function useChat({ userId }: UseChatProps = {}): UseChat {
 
                                 // 更新或添加助手消息
                                 if (lastMessage && lastMessage.role === 'assistant') {
-                                    lastMessage.content = currentResponse
+                                    lastMessage.content = lastMessage.content + currentResponse
                                     if (reference) {
                                         lastMessage.references = reference
                                     }
